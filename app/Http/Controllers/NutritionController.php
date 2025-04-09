@@ -70,7 +70,7 @@ class NutritionController extends Controller
         return redirect()->route('nutrition.index')->with('success', 'Menu berhasil diperbarui');
     }
 
-    public function destroy($id)
+    public function datale($id)
     {
         $menu = NutritionRecommendation::findOrFail($id);
         $menu->delete();
