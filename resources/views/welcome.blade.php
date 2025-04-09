@@ -13,14 +13,16 @@
             <h1 class="text-xl font-bold">Kalkulator BMI</h1>
         </div>
         <div class="bg-gray-200 p-4 rounded-lg">
-        <form id="bmiForm" method="POST">
+        <form id="bmiForm" action="{{ route('hitung-bmi') }}" method="POST">
                 @csrf
-                <input type="text" name="gender" placeholder="Gender (Pria/Wanita)"  class="w-full p-2 mb-2 border border-gray-300 rounded" required>
-                <input type="number" name="tinggi" placeholder="Tinggi Badan (cm)" class="w-full p-2 mb-2 border border-gray-300 rounded" required>
-                <input type="number" name="berat" placeholder="Berat Badan (kg)"class="w-full p-2 mb-2 border border-gray-300 rounded" required>
-                <input type="text" placeholder="BMI Score" class="w-full p-2 mb-2 border border-gray-400 bg-gray-300 rounded" readonly>
-                <input type="text" placeholder="Status" class="w-full p-2 mb-2 border border-gray-400 bg-gray-300 rounded" readonly>
+                <input type="text" name="gender" placeholder="Gender (Pria/Wanita)" value="{{ session('gender') }}" class="w-full p-2 mb-2 border border-gray-300 rounded" required>
+                <input type="number" name="tinggi" placeholder="Tinggi Badan (cm)" value="{{ session('tinggi') }}" class="w-full p-2 mb-2 border border-gray-300 rounded" required>
+                <input type="number" name="berat" placeholder="Berat Badan (kg)" value="{{ session('berat') }}" class="w-full p-2 mb-2 border border-gray-300 rounded" required>
+                <input type="text" value="{{ session('bmi') }}" placeholder="BMI Score" class="w-full p-2 mb-2 border border-gray-400 bg-gray-300 rounded" readonly>
+                <input type="text" value="{{ session('status') }}" placeholder="Status" class="w-full p-2 mb-2 border border-gray-400 bg-gray-300 rounded" readonly>
 
+
+                <button type="submit" class="w-full bg-gray-500 text-white py-2 rounded mb-2" onclick="setFormAction(event, '{{ route('hitung-bmi') }}')">Hitung</button>
     </form>
 </body>
 </html>
