@@ -12,11 +12,11 @@ class CreateDetectionsTable extends Migration
             $table->id();
             $table->string('nama');
             $table->integer('umur');
-            $table->char('jenis_kelamin', 1);
+            $table->enum('jenis_kelamin', ['L', 'P']);
             $table->float('berat_badan');
             $table->float('tinggi_badan');
-            $table->float('z_score')->nullable();
-            $table->string('status')->nullable();
+            $table->float('z_score');
+            $table->string('status');
             $table->timestamps();
         });
     }
