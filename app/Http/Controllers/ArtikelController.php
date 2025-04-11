@@ -11,12 +11,12 @@ class ArtikelController extends Controller
     public function index()
     {
         $artikels = Artikel::all();
-        return view('artikel.index', compact('artikels'));
+        return view('admin.artikel.index', compact('artikels'));
     }
 
     public function create()
     {
-        return view('artikel.create');
+        return view('admin.artikel.create');
     }
 
     public function store(Request $request)
@@ -47,7 +47,7 @@ class ArtikelController extends Controller
     public function edit($id)
     {
         $artikel = Artikel::findOrFail($id);
-        return view('artikel.edit', compact('artikel'));
+        return view('admin.artikel.edit', compact('artikel'));
     }
 
     public function update(Request $request, $id)
@@ -62,4 +62,13 @@ class ArtikelController extends Controller
         Artikel::destroy($id);
         return redirect()->route('admin.artikel.index')->with('success', 'Artikel berhasil dihapus!');
     }
+
+    public function show($id)
+    {
+        $artikel = Artikel::findOrFail($id);
+        $artikel->increment('views'); // ini langsung +1 views
+        return view('admin.artikel.show', compact('artikel'));
+    }
+
+
 }
