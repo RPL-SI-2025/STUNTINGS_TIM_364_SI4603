@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('nutrition_recomendations', function (Blueprint $table) {
+        Schema::create('nutrition_recommendations', function (Blueprint $table) {
             $table->id();
             $table->string('name'); // Nama Menu
             $table->text('nutrition'); // Informasi nutrisi
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('nutrition_recomendations');
+        Schema::dropIfExists('nutrition_recommendations');
     }
 };

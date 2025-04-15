@@ -1,3 +1,4 @@
+
 <div class="mb-3">
     <label>Nama Menu</label>
     <input type="text" name="name" value="{{ old('name', $menu->name ?? '') }}" class="form-control" required>

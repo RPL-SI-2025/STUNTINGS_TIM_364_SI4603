@@ -1,6 +1,4 @@
-@extends('layouts.app')
 
-@section('content')
 <div class="container">
     <h2>Daftar Menu Nutrisi</h2>
     <a href="{{ route('nutrition.create') }}" class="btn btn-primary mb-3">Tambah Menu</a>
@@ -29,4 +27,4 @@
     </div>
     @endforeach
 </div>
-@endsection
+
