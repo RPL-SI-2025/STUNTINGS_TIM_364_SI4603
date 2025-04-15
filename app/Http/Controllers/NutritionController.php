@@ -1,4 +1,4 @@
-<php
+<?php
 
 namespace App\Http\Controllers;
 
@@ -70,7 +70,7 @@ class NutritionController extends Controller
         return redirect()->route('nutrition.index')->with('success', 'Menu berhasil diperbarui');
     }
 
-    public function datale($id)
+    public function detale($id)
     {
         $menu = NutritionRecommendation::findOrFail($id);
         $menu->delete();
