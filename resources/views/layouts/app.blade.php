@@ -20,7 +20,7 @@
 </head>
 <body>
 
-    {{-- Navbar --}}
+    <!-- {{-- Navbar --}}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
             <a class="navbar-brand" href="{{ route('nutrition.index') }}">NutriCare</a>
@@ -28,7 +28,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
         </div>
-    </nav>
+    </nav> -->
 
     {{-- Main Content --}}
     <main class="container">

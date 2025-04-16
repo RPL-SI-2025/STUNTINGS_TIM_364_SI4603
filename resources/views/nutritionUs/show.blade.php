@@ -4,10 +4,8 @@
 @section('content')
 
 <div class="container">
-    <h2>Daftar Menu Nutrisi</h2>
-    <a href="{{ route('nutrition.create') }}" class="btn btn-primary mb-3">Tambah Menu</a>
+    <h2>Detail Menu</h2>
 
-    @foreach ($menus as $menu)
     <div class="card mb-3">
         <div class="row">
             <div class="col-md-3">
@@ -20,16 +18,9 @@
                 <p><strong>Nutrisi:</strong> {{ $menu->nutrition }}</p>
                 <p><strong>Bahan:</strong> {{ $menu->ingredients }}</p>
                 <p><strong>Cara Buat:</strong> {{ $menu->instructions }}</p>
-                <a href="{{ route('nutrition.edit', $menu->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                <form action="{{ route('nutrition.delet', $menu->id) }}" method="POST" style="display:inline;">
-                    @csrf
-                    @method('DELETE')
-                    <button onclick="return confirm('Yakin ingin hapus?')" class="btn btn-danger btn-sm">Hapus</button>
-                </form>
             </div>
         </div>
     </div>
-    @endforeach
 </div>
 
 @endsection
