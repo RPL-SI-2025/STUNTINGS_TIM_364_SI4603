@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\User;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Artikel;
 
-class ArtikelController extends Controller
+class UserArtikelController extends Controller
 {
     // Tampilkan daftar semua artikel untuk user
     public function index()
@@ -19,6 +19,11 @@ class ArtikelController extends Controller
     public function show($id)
     {
         $artikel = Artikel::findOrFail($id);
+
+        // Tambah 1 view setiap kali artikel dibuka oleh user
+        $artikel->increment('views');
+
         return view('user.artikel.show', compact('artikel'));
     }
+
 }

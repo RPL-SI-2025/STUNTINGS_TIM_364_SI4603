@@ -63,6 +63,11 @@
         margin-top: 1rem;
     }
 
+    .view-count {
+        font-size: 0.9rem;
+        color: #6b7280;
+    }
+
     .btn {
         background-color: #005f77;
         color: white;
@@ -71,52 +76,19 @@
         border-radius: 0.5rem;
         font-size: 0.8rem;
         text-decoration: none;
+        text-align: center;
         transition: background-color 0.3s ease;
     }
 
     .btn:hover {
         background-color: #014f66;
     }
-
-    .btn-icon {
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 1rem;
-    }
-
-    .icon {
-        margin-right: 0.25rem;
-    }
-
-    .view-count {
-        font-size: 0.9rem;
-        color: #6b7280;
-    }
-
-    .add-button {
-        display: block;
-        margin: 1rem auto;
-        padding: 0.75rem 1.5rem;
-        background-color: #006d8c;
-        color: white;
-        border-radius: 0.5rem;
-        font-weight: bold;
-        text-decoration: none;
-        text-align: center;
-    }
-
-    .add-button:hover {
-        background-color: #00546b;
-    }
 </style>
 
-<h1 class="main-title">All Articles</h1>
-
-<a href="{{ route('admin.artikel.create') }}" class="add-button">+ New Article</a>
+<h1 class="main-title">Artikel untuk Anda</h1>
 
 <div class="card-container">
-    @foreach ($artikels as $artikel)
+    @forelse ($artikels as $artikel)
         <div class="card">
             @if ($artikel->image)
                 <img src="{{ asset('storage/' . $artikel->image) }}" alt="Gambar Artikel" class="article-image">
@@ -125,24 +97,16 @@
             @endif
 
             <div class="card-body">
-                <div class="card-title">{{ $artikel->title }}</div>
+                <div class="card-title">{{ Str::limit($artikel->title, 60) }}</div>
 
                 <div class="card-actions">
                     <div class="view-count">👁 {{ $artikel->views ?? 0 }}</div>
-
-                    <div>
-                        <a href="{{ route('admin.artikel.edit', $artikel->id) }}" class="btn-icon" title="Edit">✏️</a>
-                        <form action="{{ route('admin.artikel.destroy', $artikel->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn-icon" title="Delete" onclick="return confirm('Hapus artikel ini?')">🗑️</button>
-                        </form>
-                    </div>
+                    <a href="{{ route('user.artikel.show', $artikel->id) }}" class="btn">Read All</a>
                 </div>
-
-                <a href="{{ route('admin.artikel.show', $artikel->id) }}" class="btn" style="margin-top: 0.75rem;">Read All</a>
             </div>
         </div>
-    @endforeach
+    @empty
+        <p style="text-align: center; color: #6b7280;">Belum ada artikel yang tersedia.</p>
+    @endforelse
 </div>
 @endsection

@@ -32,7 +32,8 @@
     }
 
     input[type="text"],
-    textarea {
+    textarea,
+    input[type="file"] {
         width: 100%;
         padding: 0.75rem;
         border: 1px solid #d1d5db;
@@ -74,7 +75,7 @@
 <div class="container">
     <h1>Buat Artikel Baru</h1>
 
-    <form action="{{ route('admin.artikel.store') }}" method="POST">
+    <form action="{{ route('admin.artikel.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <label for="title">Judul Artikel</label>
@@ -82,6 +83,9 @@
 
         <label for="content">Konten</label>
         <textarea name="content" id="content" rows="10" required>{{ old('content') }}</textarea>
+
+        <label for="image">Gambar (opsional)</label>
+        <input type="file" name="image" id="image" accept="image/*">
 
         <button type="submit">Publikasikan</button>
     </form>

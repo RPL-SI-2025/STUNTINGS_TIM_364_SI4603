@@ -32,6 +32,7 @@
     }
 
     input[type="text"],
+    input[type="file"],
     textarea {
         width: 100%;
         padding: 0.75rem;
@@ -69,12 +70,18 @@
     .back-link:hover {
         text-decoration: underline;
     }
+
+    img {
+        max-width: 200px;
+        margin-top: 0.5rem;
+        border-radius: 0.5rem;
+    }
 </style>
 
 <div class="container">
     <h1>Edit Artikel</h1>
 
-    <form action="{{ route('admin.artikel.update', $artikel->id) }}" method="POST">
+    <form action="{{ route('admin.artikel.update', $artikel->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
@@ -83,6 +90,14 @@
 
         <label for="content">Konten</label>
         <textarea name="content" id="content" rows="10" required>{{ old('content', $artikel->content) }}</textarea>
+
+        <label for="image">Gambar (opsional)</label>
+        <input type="file" name="image" id="image" accept="image/*">
+
+        @if ($artikel->image)
+            <p>Gambar saat ini:</p>
+            <img src="{{ asset('storage/' . $artikel->image) }}" alt="Gambar Artikel">
+        @endif
 
         <button type="submit">Simpan Perubahan</button>
     </form>

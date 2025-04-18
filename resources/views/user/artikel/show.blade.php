@@ -2,20 +2,21 @@
 
 @section('content')
 <style>
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #e5e7eb;
-        margin: 0;
-        padding: 0;
-    }
-
     .container {
         max-width: 900px;
         margin: 2rem auto;
-        background-color: #ffffff;
-        border-radius: 1rem;
-        padding: 2rem;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        padding: 1.5rem;
+        background-color: #f9fafb;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    h1 {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #111827;
+        margin-bottom: 1rem;
+        text-align: center;
     }
 
     .artikel-image {
@@ -28,41 +29,49 @@
         display: block;
     }
 
-
-    .artikel-title {
-        font-size: 2rem;
-        font-weight: bold;
-        color: #1f2937;
-        margin-bottom: 1rem;
-        text-align: center;
-    }
-
-    .artikel-content {
+    .content {
         color: #374151;
         line-height: 1.8;
-        white-space: pre-line;
         overflow-wrap: break-word;
         word-break: break-word;
+        white-space: pre-line;
     }
 
-    .back-button {
+    .back-link {
         display: inline-block;
         margin-top: 2rem;
-        background-color: #005f77;
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
         text-decoration: none;
+        color: #2563eb;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+    }
+
+    .btn-back {
+        display: inline-block;
+        margin-top: 2rem;
+        padding: 0.5rem 1rem;
+        background-color: #006d8c;
+        color: white;
+        border-radius: 0.5rem;
+        font-weight: bold;
+        text-decoration: none;
+        font-size: 0.95rem;
+        text-align: center;
         transition: background-color 0.3s ease;
     }
 
-    .back-button:hover {
-        background-color: #014f66;
+    .btn-back:hover {
+        background-color: #00546b;
     }
+
 </style>
 
 <div class="container">
-    <div class="artikel-title">{{ $artikel->title }}</div>
+    <h1>{{ $artikel->title }}</h1>
 
     @if ($artikel->image)
         <img src="{{ asset('storage/' . $artikel->image) }}" alt="Gambar Artikel" class="artikel-image">
@@ -70,10 +79,10 @@
         <img src="{{ asset('default-image.png') }}" alt="Gambar Default" class="artikel-image">
     @endif
 
-    <div class="artikel-content">
+    <div class="content">
         {!! nl2br(e($artikel->content)) !!}
     </div>
 
-    <a href="{{ route('admin.artikel.index') }}" class="back-button">← Kembali ke daftar artikel</a>
+    <a href="{{ route('user.artikel.index') }}" class="btn-back">← Kembali ke Daftar Artikel</a>
 </div>
 @endsection
