@@ -23,8 +23,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Route untuk admin
-Route::middleware('admin')->group(function () {
+Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/detections', [AdminDetectionController::class, 'index'])->name('admin.detections');
 });
+
             
 
