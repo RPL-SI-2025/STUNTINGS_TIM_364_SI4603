@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\tahapanPerkembangan;
+use App\Models\TahapanPerkembangan;
 use Illuminate\Http\Request;
 
-class tahapanPerkembanganController extends Controller
+class TahapanPerkembanganController extends Controller
 {
     public function index()
     {
         $tahapanPerkembangan = tahapanPerkembangan::all();
-        return view('admin.tahapanPerkembangan.index', compact('tahapanPerkembangan'));
+        return view('adminTahapan.index', compact('tahapanPerkembangan'));
     }
 
     public function create()
     {
-        return view('admin.tahapanPerkembangan.create');
+        return view('adminTahapan.create');
     }
 
     public function store(Request $request)
