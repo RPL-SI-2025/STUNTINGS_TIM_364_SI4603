@@ -23,9 +23,7 @@
     {{-- Form Deteksi --}}
     <form action="{{ route('deteksi.store') }}" method="POST">
         @csrf
-        <div class="mb-3">
-            <label>Nama Anak</label>
-            <input type="text" name="nama" class="form-control" required>
+        <input type="hidden" name="nama" value="{{ auth()->user()->nama_anak }}">
         </div>
         <div class="mb-3">
             <label>Umur (bulan)</label>
