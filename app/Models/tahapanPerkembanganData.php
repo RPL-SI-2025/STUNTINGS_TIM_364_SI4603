@@ -5,17 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class tahapanPerkembangan extends model
+class tahapanPerkembanganData extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'kategori',
-        'tahapan',
-        'deskripsi',
+        'status',
     ];
-    public function tahapanPerkembanganData()
+
+    public function tahapanPerkembangan()
     {
-        return $this->hasMany(tahapanPerkembanganData::class);
+        return $this->belongsTo(tahapanPerkembangan::class);
     }
     public function getRouteKeyName()
     {

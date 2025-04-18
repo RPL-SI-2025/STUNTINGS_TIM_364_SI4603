@@ -28,6 +28,6 @@ class tahapanPerkembanganController extends Controller
 
         tahapanPerkembangan::create($request->all());
 
-        return redirect()->route('tahapanPerkembangan.index')->with('success', 'Data berhasil ditambahkan');
+        return redirect()->route('admin.tahapanPerkembangan.index')->with('success', 'Data berhasil ditambahkan');
     }
 }
