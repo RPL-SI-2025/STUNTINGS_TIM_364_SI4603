@@ -35,6 +35,8 @@
         color: #1f2937;
         margin-bottom: 1rem;
         text-align: center;
+        overflow-wrap: break-word;
+        word-break: break-word;
     }
 
     .artikel-content {

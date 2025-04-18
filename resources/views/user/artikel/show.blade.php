@@ -68,10 +68,24 @@
         background-color: #00546b;
     }
 
+    .judul-artikel {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #111827;
+        margin-bottom: 1rem;
+        text-align: center;
+        white-space: normal; /* Biar teks boleh pindah baris */
+        word-break: break-word; /* Biar teks kepanjangan bisa dipotong */
+        overflow-wrap: break-word; /* Tambahan support supaya nggak kesamping */
+    }
+
+
+
+
 </style>
 
 <div class="container">
-    <h1>{{ $artikel->title }}</h1>
+    <h1 class="judul-artikel">{{ $artikel->title }}</h1>
 
     @if ($artikel->image)
         <img src="{{ asset('storage/' . $artikel->image) }}" alt="Gambar Artikel" class="artikel-image">
