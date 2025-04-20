@@ -44,10 +44,6 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
-            return view('index');
-
-            // Jika ingin pakai role:
-            /*
             if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard');
             } elseif ($user->role === 'orangtua') {
@@ -56,7 +52,7 @@ class AuthController extends Controller
                 Auth::logout();
                 return redirect('/login')->with('error', 'Role tidak dikenali');
             }
-            */
+            
         }
 
         return back()->withErrors([
