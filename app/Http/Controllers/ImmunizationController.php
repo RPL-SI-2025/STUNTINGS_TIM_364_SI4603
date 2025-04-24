@@ -22,9 +22,15 @@ class ImmunizationController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'age' => 'nullable|string|max:100', 
+            'description' => 'nullable|string', 
         ]);
 
-        Immunization::create($request->all());
+        Immunization::create([
+            'name' => $request->name,
+            'age' => $request->age, 
+            'description' => $request->description, 
+        ]);
 
         return redirect()->route('admin.immunizations.index')->with('success', 'Imunisasi berhasil ditambahkan');
     }
@@ -38,9 +44,16 @@ class ImmunizationController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'age' => 'nullable|string|max:100', 
+            'description' => 'nullable|string', 
         ]);
 
-        $immunization->update($request->all());
+        
+        $immunization->update([
+            'name' => $request->name,
+            'age' => $request->age, 
+            'description' => $request->description, 
+        ]);
 
         return redirect()->route('admin.immunizations.index')->with('success', 'Imunisasi berhasil diupdate');
     }
