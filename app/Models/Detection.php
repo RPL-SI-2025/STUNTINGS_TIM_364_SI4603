@@ -10,7 +10,7 @@ class Detection extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', // ini penting ditambahkan
+        'user_id', 
         'nama',
         'umur',
         'jenis_kelamin',

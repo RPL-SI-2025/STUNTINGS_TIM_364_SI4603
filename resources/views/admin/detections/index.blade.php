@@ -24,7 +24,7 @@
             </tr>
         </thead>
         <tbody>
-            @forelse ($detections as $d)
+            @forelse ($semua as $d) 
                 <tr>
                     <td>{{ $d->nama }}</td>
                     <td>{{ $d->umur }}</td>

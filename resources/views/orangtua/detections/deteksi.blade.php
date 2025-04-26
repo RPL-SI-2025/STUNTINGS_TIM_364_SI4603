@@ -21,14 +21,15 @@
     @endif
 
     {{-- Form Deteksi --}}
-    <form action="{{ route('deteksi.store') }}" method="POST">
+    <form action="{{ route('orangtua.detections.store') }}" method="POST">
         @csrf
         <input type="hidden" name="nama" value="{{ auth()->user()->nama_anak }}">
-        </div>
+
         <div class="mb-3">
             <label>Umur (bulan)</label>
             <input type="number" name="umur" class="form-control" required>
         </div>
+
         <div class="mb-3">
             <label>Jenis Kelamin</label>
             <select name="jenis_kelamin" class="form-control" required>
@@ -37,14 +38,17 @@
                 <option value="P">Perempuan</option>
             </select>
         </div>
+
         <div class="mb-3">
             <label>Berat Badan (kg)</label>
             <input type="number" step="0.1" name="berat_badan" class="form-control" required>
         </div>
+
         <div class="mb-3">
             <label>Tinggi Badan (cm)</label>
             <input type="number" step="0.1" name="tinggi_badan" class="form-control" required>
         </div>
+
         <button type="submit" class="btn btn-primary">Deteksi</button>
     </form>
 
