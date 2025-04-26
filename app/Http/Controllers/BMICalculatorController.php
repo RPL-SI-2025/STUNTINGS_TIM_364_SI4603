@@ -1,11 +1,27 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Bmi;
+
+
 
 use Illuminate\Http\Request;
 
 class BMICalculatorController extends Controller
 {
+    public function showBmiData()
+    {
+        // Get the authenticated user
+        $user = Auth::user();
+
+        // Fetch the BMI records associated with the authenticated user
+        $bmiRecords = Bmi::where('user_id', $user->id)->get();
+
+        // Return the view with the BMI data
+        return view('bmi', compact('bmiRecords'));
+    }
+
     public function calculate(Request $request)
     {
         $gender = strtolower($request->input('gender'));
@@ -34,7 +50,7 @@ class BMICalculatorController extends Controller
         session(['berat'=> $berat]);
 
 
-        return redirect()->back();
+        return redirect('/bmi');
     }
 
     public function reset()
@@ -44,11 +60,12 @@ class BMICalculatorController extends Controller
         session(['tinggi'=> ""]);
         session(['gender'=> ""]);
         session(['berat'=> ""]);
-        return redirect()->back();
+        return redirect('/bmi');
     }
 
     public function save(Request $request)
     {
+        $user = Auth::user();  // Get the authenticated user
         $gender = strtolower($request->input('gender'));
         $tinggi = $request->input('tinggi') / 100;
         $berat = $request->input('berat');
@@ -68,17 +85,16 @@ class BMICalculatorController extends Controller
             $status = "Gender tidak valid";
         }
 
-        $bmiData = session('bmiData', []);
-        $bmiData[] = [
+        Bmi::create([
+            'user_id' => $user->id,  // Associate the BMI with the authenticated user
             'tanggal' => $tanggal,
             'tinggi' => $request->input('tinggi'),
             'berat' => $berat,
             'bmi' => number_format($bmi, 2),
             'status' => $status
-        ];
-        session(['bmiData' => $bmiData]);
+        ]);
 
-        return redirect()->back();
+        return redirect('/bmi');
     }
 
 
@@ -109,16 +125,12 @@ class BMICalculatorController extends Controller
         }
     }
 
-    public function deleteRow($index)
+    public function deleteRow($id)
 {
-    $bmiData = session('bmiData', []);
+   $bmiRecord = Bmi::findOrFail($id);
+    $bmiRecord->delete();
 
-    if (isset($bmiData[$index])) {
-        unset($bmiData[$index]);
-        session(['bmiData' => array_values($bmiData)]);
-    }
-
-    return redirect()->back();
+    return redirect('/bmi');
 }
 
 }

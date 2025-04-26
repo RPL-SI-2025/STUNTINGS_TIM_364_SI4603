@@ -11,16 +11,17 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
-        return view('auth.login');
+        return view('login');
     }
 
     public function showRegister()
     {
-        return view('auth.register');
+        return view('register');
     }
 
     public function register(Request $request)
     {
+        // dd($request->all());  // Check what data is being sent
         $request->validate([
             'nama_anak' => 'required',
             'nik_anak' => 'required|digits:16|unique:users,nik_anak',
@@ -44,7 +45,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
-            return view('index');
+            return redirect('/bmi');
 
             // Jika ingin pakai role:
             /*
@@ -62,6 +63,9 @@ class AuthController extends Controller
         return back()->withErrors([
             'login' => 'NIK atau password salah.',
         ]);
+        
+
+        
     }
 
     public function logout()
