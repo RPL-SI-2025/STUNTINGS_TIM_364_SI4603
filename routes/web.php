@@ -109,7 +109,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 // artikel Ini DIPISAH dari admin
-Route::prefix('user/artikel')->name('user.artikel.')->group(function () {
+Route::prefix('orangtua/artikel')->name('orangtua.artikel.')->group(function () {
     Route::get('/', [UserArtikelController::class, 'index'])->name('index');
     Route::get('/{id}', [UserArtikelController::class, 'show'])->name('show');
 });
