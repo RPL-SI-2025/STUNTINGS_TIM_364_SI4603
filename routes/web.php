@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ImmunizationController;
 use App\Http\Controllers\ImmunizationRecordController;
+use App\Http\Controllers\TahapanPerkembanganController;
+use App\Http\Controllers\TahapanPerkembanganDataController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -30,7 +32,7 @@ Route::middleware(['auth'])->group(function () {
         if (Auth::user()->role !== 'orangtua') {
             abort(403); 
         }
-        return view('user.dashboard');
+        return view('orangtua.dashboard'); //1
     })->name('orangtua.dashboard');
 });
 
@@ -39,6 +41,6 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('immunizations', ImmunizationController::class);
 });
 //record imunisasi
-Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
+Route::middleware(['auth'])->prefix('orangtua')->name('orangtua.')->group(function () {
     Route::resource('immunization_records', ImmunizationRecordController::class);
 });
