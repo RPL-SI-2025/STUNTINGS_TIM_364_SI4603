@@ -2,53 +2,83 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\tahapanPerkembanganData;
-use App\Models\tahapanPerkembangan;
+use App\Models\TahapanPerkembangan;
+use App\Models\TahapanPerkembanganData;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class tahapanPerkembanganDataController extends Controller
+class TahapanPerkembanganDataController extends Controller
 {
     public function index()
     {
-        $tahapanPerkembanganData = tahapanPerkembanganData::all();
-        return view('tahapanPerkembanganData.index', compact('tahapanPerkembanganData'));
-    }
-    
-    
-        public function create()
-        {
-            $tahapanPerkembangan = tahapanPerkembangan::all();
-            return view('tahapanPerkembanganData.create', compact('tahapanPerkembangan'));
-        }
-    
-        public function store(Request $request)
-        {
-            $request->validate([
-                'status' => 'required',
-                'tahapan_perkembangan_id' => 'required',
-            ]);
-    
-            tahapanPerkembanganData::create($request->all());
-    
-            return redirect()->route('tahapanPerkembanganData.index')->with('success', 'Data berhasil ditambahkan');
-        }
+        $tahapanPerkembanganData = TahapanPerkembanganData::where('user_id', Auth::id())->get();
 
-        public function edit($id)
-        {
-            $tahapanPerkembanganData = tahapanPerkembanganData::findOrFail($id);
-            $tahapanPerkembangan = tahapanPerkembangan::all();
-            return view('tahapanPerkembanganData.edit', compact('tahapanPerkembanganData', 'tahapanPerkembangan'));
-        }
-        public function update(Request $request, $id)
-        {
-            $request->validate([
-                'status' => 'required',
-                'tahapan_perkembangan_id' => 'required',
-            ]);
-    
-            $tahapanPerkembanganData = tahapanPerkembanganData::findOrFail($id);
-            $tahapanPerkembanganData->update($request->all());
-    
-            return redirect()->route('tahapanPerkembanganData.index')->with('success', 'Data berhasil diperbarui');
-        }
+        return view('orangtua.tahapan_perkembangan.index', compact('tahapanPerkembanganData'));
+    }
+
+    public function create()
+    {
+        $tahapanPerkembangan = TahapanPerkembangan::all();
+        return view('orangtua.tahapan_perkembangan.create', compact('tahapanPerkembangan'));
+    }
+
+    public function edit($id)
+    {
+        $tahapanPerkembanganData = TahapanPerkembanganData::findOrFail($id);
+        $tahapanPerkembangan = TahapanPerkembangan::all();
+
+
+        return view('orangtua.tahapan_perkembangan.edit', compact('tahapanPerkembanganData', 'tahapanPerkembangan'));
+    }
+
+    public function store(Request $request)
+    {
+
+        $request->validate([
+            'tahapan_perkembangan_id' => 'required|exists:tahapan_perkembangan,id',
+            'tanggal_pencapaian' => 'required|date|before_or_equal:today',
+            'status' => 'required|in:tercapai,belum_tercapai',
+            'catatan' => 'nullable|string',
+        ]);
+
+
+        TahapanPerkembanganData::create([
+            'user_id' => Auth::id(),
+            'tahapan_perkembangan_id' => $request->tahapan_perkembangan_id,
+            'tanggal_pencapaian' => $request->tanggal_pencapaian,
+            'status' => $request->status,
+            'catatan' => $request->catatan,
+        ]);
+
+        return redirect()->route('orangtua.tahapan_perkembangan.index')->with('success', 'Pencapaian tahapan perkembangan berhasil ditambahkan.');
+    }
+
+    public function update(Request $request, $id)
+    {
+
+        $request->validate([
+            'tahapan_perkembangan_id' => 'required|exists:tahapan_perkembangan,id',
+            'tanggal_pencapaian' => 'required|date|before_or_equal:today',
+            'status' => 'required|in:tercapai,belum_tercapai',
+            'catatan' => 'nullable|string',
+        ]);
+
+        $tahapanPerkembanganData = TahapanPerkembanganData::findOrFail($id);
+
+        $tahapanPerkembanganData->update([
+            'tahapan_perkembangan_id' => $request->tahapan_perkembangan_id,
+            'tanggal_pencapaian' => $request->tanggal_pencapaian,
+            'status' => $request->status,
+            'catatan' => $request->catatan,
+        ]);
+
+        return redirect()->route('orangtua.tahapan_perkembangan.index')->with('success', 'Pencapaian tahapan perkembangan berhasil diupdate.');
+    }
+    public function destroy($id)
+    {
+        $tahapanPerkembanganData = TahapanPerkembanganData::findOrFail($id);
+        $tahapanPerkembanganData->delete();
+
+        return redirect()->route('orangtua.tahapan_perkembangan.index')->with('success', 'Pencapaian tahapan perkembangan berhasil dihapus.');
+    }
 }

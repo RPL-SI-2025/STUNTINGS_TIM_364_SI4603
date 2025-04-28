@@ -4,27 +4,22 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateTahapanPerkembanganTable extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('tahapan_perkembangan', function (Blueprint $table) {
             $table->id();
-            $table -> string('Umur');
-            $table -> string ('tahapan');
-            $table -> string ('deskripsi');
+            $table->string('nama_tahapan');
+            $table->text('deskripsi')->nullable();
+            $table->integer('umur_minimal_bulan')->nullable();
+            $table->integer('umur_maksimal_bulan')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('tahapan_perkembangan');
     }
-};
+}

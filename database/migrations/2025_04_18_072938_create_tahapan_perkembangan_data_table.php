@@ -4,25 +4,23 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateTahapanPerkembanganDataTable extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('tahapan_perkembangan_data', function (Blueprint $table) {
             $table->id();
-            $table->enum('status', ['sudah', 'belum']);
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('tahapan_perkembangan_id')->constrained('tahapan_perkembangan')->onDelete('cascade');
+            $table->date('tanggal_pencapaian')->nullable();
+            $table->enum('status', ['tercapai', 'belum_tercapai'])->default('belum_tercapai');
+            $table->text('catatan')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('tahapan_perkembangan_data');
     }
-};
+}
