@@ -10,6 +10,7 @@ class Detection extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id', 
         'nama',
         'umur',
         'jenis_kelamin',
@@ -18,4 +19,9 @@ class Detection extends Model
         'z_score',
         'status',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
