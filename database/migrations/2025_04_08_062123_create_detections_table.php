@@ -6,10 +6,14 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateDetectionsTable extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
         Schema::create('detections', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('nama');
             $table->integer('umur');
             $table->enum('jenis_kelamin', ['L', 'P']);
@@ -21,7 +25,10 @@ class CreateDetectionsTable extends Migration
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::dropIfExists('detections');
     }
