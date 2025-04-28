@@ -12,7 +12,7 @@ class UserArtikelController extends Controller
     public function index()
     {
         $artikels = Artikel::latest()->get();
-        return view('orangtua.artikel.index', compact('artikels'));
+        return view('user.artikel.index', compact('artikels'));
     }
 
     // Tampilkan detail satu artikel
@@ -23,7 +23,7 @@ class UserArtikelController extends Controller
         // Tambah 1 view setiap kali artikel dibuka oleh user
         $artikel->increment('views');
 
-        return view('orangtua.artikel.show', compact('artikel'));
+        return view('user.artikel.show', compact('artikel'));
     }
 
 }
