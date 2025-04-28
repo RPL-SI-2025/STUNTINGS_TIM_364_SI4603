@@ -19,4 +19,28 @@ Route::prefix('user/artikel')->name('user.artikel.')->group(function () {
     Route::get('/{id}', [UserArtikelController::class, 'show'])->name('show');
 });
 
+// Login & Register
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Dashboard 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/dashboard', function () {
+        if (Auth::user()->role !== 'admin') {
+            abort(403); 
+        }
+        return view('admin.dashboard');
+    })->name('admin.dashboard');
+
+    Route::get('/user/dashboard', function () {
+        if (Auth::user()->role !== 'orangtua') {
+            abort(403); 
+        }
+        return view('user.dashboard');
+    })->name('orangtua.dashboard');
+});
+
 
