@@ -29,11 +29,11 @@ class BMICalculatorController extends Controller
         $tinggi = $request->input('tinggi') / 100;
         $berat = $request->input('berat');
 
-        if ($tinggi > 0) {
-            $bmi = $berat / ($tinggi * $tinggi);
-        } else {
-            $bmi = 0;
-        }
+         if ($tinggi > 0) {
+                $bmi = $berat / ($tinggi * $tinggi);
+            } else {
+                $bmi = 0;
+            }
 
         if ($gender == 'pria' || $gender == 'laki-laki') {
             $status = $this->statusBmiPria($bmi);
@@ -52,7 +52,7 @@ class BMICalculatorController extends Controller
 
         return redirect('/bmi');
     }
-
+    
     public function reset()
     {
         session(['bmi'=> ""]);
@@ -70,6 +70,10 @@ class BMICalculatorController extends Controller
         $tinggi = $request->input('tinggi') / 100;
         $berat = $request->input('berat');
         $tanggal = now()->format('Y-m-d H:i');
+
+        if ($tinggi <= 0 || $berat <= 0) {
+            return redirect()->back()->withErrors(['message' => 'Data tidak lengkap'])->withInput();
+        }
 
         if ($tinggi > 0) {
             $bmi = $berat / ($tinggi * $tinggi);
