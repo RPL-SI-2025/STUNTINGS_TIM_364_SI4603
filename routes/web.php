@@ -14,6 +14,7 @@ use App\Http\Controllers\ArtikelController;
 use App\Http\Controllers\UserArtikelController;
 use App\Http\Controllers\DetectionController;
 use App\Http\Controllers\AdminDetectionController;
+use App\Http\Controllers\ArtikelKategoriController;
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/artikel', [ArtikelController::class, 'index'])->name('artikel.index');
@@ -114,6 +115,11 @@ Route::get('/nutritionUs/{id}', function (string $id) {
     $menu = NutritionRecommendation::find($id);
     return view('nutritionUs.show', compact('menu'));
 } )->name('nutritionUs.show');
+
+//kategori artikel
+Route::prefix('admin/artikel')->name('admin.artikel.')->group(function () {
+    Route::resource('kategori', ArtikelKategoriController::class)->except(['show']);
+});
 
 //artikel
 Route::prefix('admin')->name('admin.')->group(function () {

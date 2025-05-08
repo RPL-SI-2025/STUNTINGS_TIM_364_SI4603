@@ -16,7 +16,11 @@ return new class extends Migration {
             $table->text('content');
             $table->string('slug')->unique();
             $table->unsignedBigInteger('views')->default(0); 
-            $table->string('image')->nullable(); 
+            $table->string('image')->nullable();
+
+            // Foreign key ke tabel artikel_kategoris
+            $table->foreignId('artikel_kategori_id')->constrained('artikel_kategoris')->onDelete('cascade');
+
             $table->timestamps(); 
         });
     }
