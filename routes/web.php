@@ -14,6 +14,7 @@ use App\Http\Controllers\ArtikelController;
 use App\Http\Controllers\UserArtikelController;
 use App\Http\Controllers\DetectionController;
 use App\Http\Controllers\AdminDetectionController;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -96,6 +97,21 @@ Route::get('/nutritionUs/{id}', function (string $id) {
     $menu = NutritionRecommendation::find($id);
     return view('nutritionUs.show', compact('menu'));
 } )->name('nutritionUs.show');
+
+Route::get('/nutritionUs', function (Request $request) {
+
+    $kategori = $request->query('kategori');
+
+    if ($kategori) {
+        $menus = NutritionRecommendation::where('category', $kategori)->get();
+
+    } else {
+        $menus = NutritionRecommendation::all();
+    }
+
+    return view('nutritionUs.index', compact('menus', 'kategori'));
+
+} )->name('nutritionUs.index');
 
 //artikel
 Route::prefix('admin')->name('admin.')->group(function () {
