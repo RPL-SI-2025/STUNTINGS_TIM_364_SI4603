@@ -12,11 +12,10 @@ class Artikel extends Model
         'content',
         'image',
         'views',
-        'artikel_kategori_id'
     ];
 
-    public function kategori()
+    public function kategoris()
     {
-        return $this->belongsTo(ArtikelKategori::class, 'artikel_kategori_id');
+        return $this->belongsToMany(ArtikelKategori::class, 'artikel_artikel_kategori');
     }
 }

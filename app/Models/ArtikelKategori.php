@@ -9,12 +9,12 @@ class ArtikelKategori extends Model
 {
     use HasFactory;
 
-    protected $table = 'artikel_kategoris'; // pakai snake_case jamak sesuai Laravel convention
+    protected $table = 'artikel_kategoris'; // tetap benar, karena table utama kategori
 
     protected $fillable = ['name'];
 
     public function artikels()
     {
-        return $this->hasMany(Artikel::class, 'artikel_kategori_id');
+        return $this->belongsToMany(Artikel::class, 'artikel_artikel_kategori');
     }
 }

@@ -16,11 +16,10 @@ return new class extends Migration {
             $table->text('content');
             $table->string('slug')->unique();
             $table->unsignedBigInteger('views')->default(0); 
-            $table->string('image')->nullable();
+            $table->string('image')->nullable(); 
             $table->timestamps(); 
         });
     }
-
 
     /**
      * Reverse the migrations.

@@ -6,17 +6,26 @@
         max-width: 900px;
         margin: 2rem auto;
         padding: 1.5rem;
-        background-color: #f9fafb;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        background-color: #ffffff;
+        border-radius: 1rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
 
-    h1 {
+    .judul-artikel {
         font-size: 2rem;
         font-weight: bold;
-        color: #111827;
-        margin-bottom: 1rem;
+        color: #1f2937;
+        margin-bottom: 0.75rem;
         text-align: center;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .artikel-meta {
+        font-size: 0.95rem;
+        color: #6b7280;
+        text-align: center;
+        margin-bottom: 1.5rem;
     }
 
     .artikel-image {
@@ -32,22 +41,8 @@
     .content {
         color: #374151;
         line-height: 1.8;
-        overflow-wrap: break-word;
-        word-break: break-word;
         white-space: pre-line;
-    }
-
-    .back-link {
-        display: inline-block;
-        margin-top: 2rem;
-        text-decoration: none;
-        color: #2563eb;
-        font-weight: 500;
-        font-size: 0.95rem;
-    }
-
-    .back-link:hover {
-        text-decoration: underline;
+        word-break: break-word;
     }
 
     .btn-back {
@@ -67,25 +62,14 @@
     .btn-back:hover {
         background-color: #00546b;
     }
-
-    .judul-artikel {
-        font-size: 2rem;
-        font-weight: bold;
-        color: #111827;
-        margin-bottom: 1rem;
-        text-align: center;
-        white-space: normal; /* Biar teks boleh pindah baris */
-        word-break: break-word; /* Biar teks kepanjangan bisa dipotong */
-        overflow-wrap: break-word; /* Tambahan support supaya nggak kesamping */
-    }
-
-
-
-
 </style>
 
 <div class="container">
     <h1 class="judul-artikel">{{ $artikel->title }}</h1>
+
+    <div class="artikel-meta">
+        <strong>Kategori:</strong> {{ $artikel->kategoris->pluck('name')->join(', ') }}
+    </div>
 
     @if ($artikel->image)
         <img src="{{ asset('storage/' . $artikel->image) }}" alt="Gambar Artikel" class="artikel-image">

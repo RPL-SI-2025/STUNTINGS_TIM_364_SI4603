@@ -5,19 +5,27 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Artikel;
+use App\Models\ArtikelKategori;
 
 class UserArtikelController extends Controller
 {
     // Tampilkan daftar semua artikel untuk user
-    public function index()
+    public function index(Request $request)
     {
-        $artikels = Artikel::latest()->get();
+        $kategoriIds = $request->input('kategori', []);
+        $kategoris = ArtikelKategori::all();
 
-        return view('user.artikel.index', compact('artikels'));
+        if (!empty($kategoriIds)) {
+            $artikels = Artikel::whereHas('kategoris', function ($query) use ($kategoriIds) {
+                $query->whereIn('artikel_kategori_id', $kategoriIds);
+            })->get();
+        } else {
+            $artikels = Artikel::all();
+        }
 
-        return view('orangtua.artikel.index', compact('artikels'));
-
+        return view('orangtua.artikel.index', compact('artikels', 'kategoris', 'kategoriIds'));
     }
+
 
     // Tampilkan detail satu artikel
     public function show($id)

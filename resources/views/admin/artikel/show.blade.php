@@ -9,13 +9,37 @@
         padding: 0;
     }
 
-    .container {
+    .main-title {
+        text-align: center;
+        color: #005f77;
+        font-size: 2rem;
+        margin: 2rem 0 1rem;
+    }
+
+    .table-container {
         max-width: 900px;
-        margin: 2rem auto;
-        background-color: #ffffff;
-        border-radius: 1rem;
+        margin: 0 auto 2rem auto;
+        background-color: #f3f4f6;
         padding: 2rem;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border-radius: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .artikel-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #1f2937;
+        margin-bottom: 0.75rem;
+        text-align: center;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+
+    .artikel-meta {
+        font-size: 0.95rem;
+        color: #6b7280;
+        text-align: center;
+        margin-bottom: 1.5rem;
     }
 
     .artikel-image {
@@ -26,17 +50,6 @@
         border-radius: 0.5rem;
         margin: 0 auto 1.5rem;
         display: block;
-    }
-
-
-    .artikel-title {
-        font-size: 2rem;
-        font-weight: bold;
-        color: #1f2937;
-        margin-bottom: 1rem;
-        text-align: center;
-        overflow-wrap: break-word;
-        word-break: break-word;
     }
 
     .artikel-content {
@@ -55,6 +68,7 @@
         padding: 0.5rem 1rem;
         border-radius: 0.5rem;
         text-decoration: none;
+        font-weight: bold;
         transition: background-color 0.3s ease;
     }
 
@@ -63,8 +77,14 @@
     }
 </style>
 
-<div class="container">
+<h1 class="main-title">Detail Artikel</h1>
+
+<div class="table-container">
     <div class="artikel-title">{{ $artikel->title }}</div>
+
+    <div class="artikel-meta">
+        <strong>Kategori:</strong> {{ $artikel->kategoris->pluck('name')->join(', ') }}
+    </div>
 
     @if ($artikel->image)
         <img src="{{ asset('storage/' . $artikel->image) }}" alt="Gambar Artikel" class="artikel-image">

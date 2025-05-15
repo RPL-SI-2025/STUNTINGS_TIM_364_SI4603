@@ -26,13 +26,15 @@
 
     .card {
         background-color: #ffffff;
-        width: 250px;
+        flex: 1 1 calc(33.333% - 1rem); /* Maks 3 per baris */
+        max-width: calc(33.333% - 1rem);
         border-radius: 1rem;
         overflow: hidden;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         display: flex;
         flex-direction: column;
     }
+
 
     .article-image {
         width: 100%;
@@ -56,11 +58,26 @@
         margin-bottom: 0.5rem;
     }
 
+    .badge {
+        display: inline-block;
+        background-color: #d1fae5;
+        color: #065f46;
+        font-size: 0.75rem;
+        padding: 0.2rem 0.5rem;
+        margin: 0.2rem 0.2rem 0 0;
+        border-radius: 0.5rem;
+    }
+
     .card-actions {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-top: 1rem;
+    }
+
+    .view-count {
+        font-size: 0.9rem;
+        color: #6b7280;
     }
 
     .btn {
@@ -85,15 +102,6 @@
         font-size: 1rem;
     }
 
-    .icon {
-        margin-right: 0.25rem;
-    }
-
-    .view-count {
-        font-size: 0.9rem;
-        color: #6b7280;
-    }
-
     .add-button {
         display: block;
         margin: 1rem auto;
@@ -109,14 +117,87 @@
     .add-button:hover {
         background-color: #00546b;
     }
+
+    /* Modal */
+    #filterModal {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.4);
+        z-index: 999;
+    }
+
+    .modal-content {
+        background: white;
+        max-width: 600px;
+        margin: 5% auto;
+        padding: 2rem;
+        border-radius: 1rem;
+        position: relative;
+    }
+
+    .modal-content h2 {
+        font-size: 1.5rem;
+        color: #005f77;
+        margin-bottom: 1rem;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .filter-group label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+    }
 </style>
 
 <h1 class="main-title">All Articles</h1>
 
 <a href="{{ route('admin.artikel.create') }}" class="add-button">+ New Article</a>
 
+<!-- Tombol buka modal -->
+<div style="text-align: center; margin-bottom: 1.5rem;">
+    <button onclick="toggleModal()" class="btn">🔍 Filter Kategori</button>
+</div>
+
+<!-- Modal Filter -->
+<div id="filterModal">
+    <div class="modal-content">
+        <h2>Pilih Kategori</h2>
+
+        <form method="GET" action="{{ route('admin.artikel.index') }}">
+            <div class="filter-group">
+                @foreach ($kategoris as $kategori)
+                    <label>
+                        <input
+                            type="checkbox"
+                            name="kategori[]"
+                            value="{{ $kategori->id }}"
+                            {{ in_array($kategori->id, $kategoriIds ?? []) ? 'checked' : '' }}
+                        >
+                        {{ $kategori->name }}
+                    </label>
+                @endforeach
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+                <button type="submit" class="btn">Apply</button>
+                <a href="{{ route('admin.artikel.index') }}" class="btn" style="background-color:#9ca3af;">Reset</a>
+                <button type="button" class="btn" style="background-color:#ef4444;" onclick="toggleModal()">Close</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="card-container">
-    @foreach ($artikels as $artikel)
+    @forelse ($artikels as $artikel)
         <div class="card">
             @if ($artikel->image)
                 <img src="{{ asset('storage/' . $artikel->image) }}" alt="Gambar Artikel" class="article-image">
@@ -127,9 +208,14 @@
             <div class="card-body">
                 <div class="card-title">{{ $artikel->title }}</div>
 
+                <div style="margin-bottom: 0.5rem;">
+                    @foreach ($artikel->kategoris as $kategori)
+                        <span class="badge">#{{ $kategori->name }}</span>
+                    @endforeach
+                </div>
+
                 <div class="card-actions">
                     <div class="view-count">👁 {{ $artikel->views ?? 0 }}</div>
-
                     <div>
                         <a href="{{ route('admin.artikel.edit', $artikel->id) }}" class="btn-icon" title="Edit">✏️</a>
                         <form action="{{ route('admin.artikel.destroy', $artikel->id) }}" method="POST" style="display:inline;">
@@ -143,6 +229,15 @@
                 <a href="{{ route('admin.artikel.show', $artikel->id) }}" class="btn" style="margin-top: 0.75rem;">Read All</a>
             </div>
         </div>
-    @endforeach
+    @empty
+        <p style="text-align: center; color: #6b7280;">Belum ada artikel.</p>
+    @endforelse
 </div>
+
+<script>
+    function toggleModal() {
+        const modal = document.getElementById('filterModal');
+        modal.style.display = (modal.style.display === 'none' || modal.style.display === '') ? 'block' : 'none';
+    }
+</script>
 @endsection
