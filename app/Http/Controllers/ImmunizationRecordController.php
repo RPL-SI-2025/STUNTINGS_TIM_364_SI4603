@@ -9,22 +9,14 @@ use Illuminate\Support\Facades\Auth;
 
 class ImmunizationRecordController extends Controller
 {
-    public function __construct()
-    {
-        // Hanya orangtua yang bisa mengakses controller ini
-        $this->middleware(function ($request, $next) {
-            if (Auth::check() && Auth::user()->role !== 'orangtua') {
-                // Jika role bukan orangtua, tampilkan 403 forbidden
-                abort(403, 'Anda tidak memiliki akses ke halaman ini.');
-            }
-            return $next($request);
-        });
-    }
-
     public function index()
     {
+        if (auth()->user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized');
+        }
+
         $records = ImmunizationRecord::with('immunization')
-            ->where('user_id', Auth::id())
+            ->where('user_id', auth()->id())
             ->get();
 
         return view('orangtua.immunization_records.index', compact('records'));
@@ -32,12 +24,20 @@ class ImmunizationRecordController extends Controller
 
     public function create()
     {
+        if (auth()->user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized');
+        }
+
         $immunizations = Immunization::all();
         return view('orangtua.immunization_records.create', compact('immunizations'));
     }
 
     public function store(Request $request)
     {
+        if (auth()->user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized');
+        }
+
         $validated = $request->validate([
             'immunization_id' => ['required', 'exists:immunizations,id'],
             'immunized_at' => ['required', 'date', 'before_or_equal:today'],
@@ -45,7 +45,7 @@ class ImmunizationRecordController extends Controller
         ]);
 
         ImmunizationRecord::create([
-            'user_id' => Auth::id(),
+            'user_id' => auth()->id(),
             ...$validated,
         ]);
 
@@ -56,6 +56,10 @@ class ImmunizationRecordController extends Controller
 
     public function edit(ImmunizationRecord $immunization_record)
     {
+        if (auth()->user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized');
+        }
+
         $this->authorizeRecord($immunization_record);
 
         $immunizations = Immunization::all();
@@ -65,6 +69,10 @@ class ImmunizationRecordController extends Controller
 
     public function update(Request $request, ImmunizationRecord $immunization_record)
     {
+        if (auth()->user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized');
+        }
+
         $this->authorizeRecord($immunization_record);
 
         $validated = $request->validate([
@@ -82,6 +90,10 @@ class ImmunizationRecordController extends Controller
 
     public function destroy(ImmunizationRecord $immunization_record)
     {
+        if (auth()->user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized');
+        }
+
         $this->authorizeRecord($immunization_record);
 
         $immunization_record->delete();
@@ -93,7 +105,7 @@ class ImmunizationRecordController extends Controller
 
     private function authorizeRecord(ImmunizationRecord $record)
     {
-        if ($record->user_id !== Auth::id()) {
+        if ($record->user_id !== auth()->id()) {
             abort(403, 'Akses ditolak.');
         }
     }
