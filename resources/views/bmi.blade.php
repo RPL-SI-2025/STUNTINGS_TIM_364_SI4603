@@ -45,7 +45,12 @@
     <div class="bg-gray-200 p-4 rounded-lg mt-4">
         <form id="bmiForm" action="{{ route('hitung-bmi') }}" method="POST">
             @csrf
-            <input type="text" name="gender" placeholder="Gender (Pria/Wanita)" value="{{ session('gender') }}" class="w-full p-2 mb-2 border border-gray-300 rounded" required>
+            <select name="gender" class="w-full p-2 mb-2 border border-gray-300 rounded" required>
+                <option value="" disabled {{ session('gender') == null ? 'selected' : '' }}>Pilih Gender</option>
+                <option value="pria" {{ session('gender') == 'pria' ? 'selected' : '' }}>Pria</option>
+                <option value="wanita" {{ session('gender') == 'wanita' ? 'selected' : '' }}>Wanita</option>
+            </select>
+            
             <input type="number" name="tinggi" placeholder="Tinggi Badan (cm)" value="{{ session('tinggi') }}" class="w-full p-2 mb-2 border border-gray-300 rounded" required>
             <input type="number" name="berat" placeholder="Berat Badan (kg)" value="{{ session('berat') }}" class="w-full p-2 mb-2 border border-gray-300 rounded" required>
             <input type="text" value="{{ session('bmi') }}" placeholder="BMI Score" class="w-full p-2 mb-2 border border-gray-400 bg-gray-300 rounded" readonly>
