@@ -77,4 +77,10 @@ class NutritionController extends Controller
 
         return redirect()->route('nutrition.index')->with('success', 'Menu berhasil dihapus');
     }
+
+    public function user()
+    {
+
+        
+    }
 }
