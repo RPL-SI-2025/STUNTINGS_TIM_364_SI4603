@@ -9,17 +9,29 @@ class NutritionController extends Controller
 {
     public function index()
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $menus = NutritionRecommendation::all();
         return view('nutrition.index', compact('menus'));
     }
 
     public function create()
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         return view('nutrition.create');
     }
 
     public function store(Request $request)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $request->validate([
             'name' => 'required',
             'nutrition' => 'required',
@@ -42,12 +54,20 @@ class NutritionController extends Controller
 
     public function edit($id)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $menu = NutritionRecommendation::findOrFail($id);
         return view('nutrition.edit', compact('menu'));
     }
 
     public function update(Request $request, $id)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $menu = NutritionRecommendation::findOrFail($id);
 
         $request->validate([
@@ -72,15 +92,23 @@ class NutritionController extends Controller
 
     public function delet($id)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $menu = NutritionRecommendation::findOrFail($id);
-        $menu->delete();
+        $menu->delet();
 
         return redirect()->route('nutrition.index')->with('success', 'Menu berhasil dihapus');
     }
 
     public function user()
     {
+        if (auth()->user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized');
+        }
 
-        
+        $menus = NutritionRecommendation::all();
+        return view('orangtua.nutrition.index', compact('menus'));
     }
 }

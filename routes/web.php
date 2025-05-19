@@ -1,5 +1,5 @@
 <?php
-
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth; 
 use App\Http\Controllers\AuthController;
@@ -14,7 +14,6 @@ use App\Http\Controllers\ArtikelController;
 use App\Http\Controllers\UserArtikelController;
 use App\Http\Controllers\DetectionController;
 use App\Http\Controllers\AdminDetectionController;
-use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -36,7 +35,7 @@ Route::middleware(['auth'])->group(function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
 
-    Route::get('/user/dashboard', function () {
+    Route::get('/orangtua/dashboard', function () {
         if (Auth::user()->role !== 'orangtua') {
             abort(403); 
         }
@@ -45,7 +44,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
  // Orangtua fitur deteksi
- Route::get('/orangtua/deteksi-stunting', [DetectionController::class, 'create'])->name('orangtua.detections.create');
+ Route::get('/user/deteksi-stunting', [DetectionController::class, 'create'])->name('orangtua.detections.create');
  Route::post('/orangtua/deteksi-stunting', [DetectionController::class, 'store'])->name('orangtua.detections.store');
 
  // Admin fitur lihat semua deteksi
@@ -79,39 +78,47 @@ Route::post('/reset-bmi', [BMICalculatorController::class, 'reset'])->name('rese
 Route::post('/hapus-bmi/{index}', [BMICalculatorController::class, 'deleteRow'])->name('hapus-bmi-row');
 Route::get('/bmi', [BMICalculatorController::class, 'showBmiData'])->name('bmi');
 
-//nutrition 
-Route::get('/nutrition', [NutritionController::class, 'index'])->name('nutrition.index');
-Route::get('/nutrition/create', [NutritionController::class, 'create'])->name('nutrition.create');
-Route::post('/nutrition', [NutritionController::class, 'store'])->name('nutrition.store');
-Route::get('/nutrition/{id}/edit', [NutritionController::class, 'edit'])->name('nutrition.edit');
-Route::put('/nutrition/{id}', [NutritionController::class, 'update'])->name('nutrition.update');
-Route::delete('/nutrition/{id}', [NutritionController::class, 'delet'])->name('nutrition.delet');
+// Route untuk ADMIN (CRUD data gizi)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/nutrition', [NutritionController::class, 'index'])->name('nutrition.index');
+    Route::get('/nutrition/create', [NutritionController::class, 'create'])->name('nutrition.create');
+    Route::post('/nutrition', [NutritionController::class, 'store'])->name('nutrition.store');
+    Route::get('/nutrition/{id}/edit', [NutritionController::class, 'edit'])->name('nutrition.edit');
+    Route::put('/nutrition/{id}', [NutritionController::class, 'update'])->name('nutrition.update');
+    Route::delete('/nutrition/{id}', [NutritionController::class, 'delet'])->name('nutrition.delet');
+});
 
-Route::get('/nutritionUs', function () {
-    $menus = NutritionRecommendation::all();
-    return view('nutritionUs.index', compact('menus'));
-} )->name('nutritionUs.index');
+// ORANGTUA (akses nutritionUs)
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/nutritionUs', function (Request $request) {
+        // Role check supaya hanya orangtua yg bisa akses nutritionUs
+        if (auth()->user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized');
+        }
+
+        $kategori = $request->query('kategori');
+
+        if ($kategori) {
+            $menus = NutritionRecommendation::where('category', $kategori)->get();
+        } else {
+            $menus = NutritionRecommendation::all();
+        }
+
+        return view('nutritionUs.index', compact('menus', 'kategori'));
+    })->name('nutritionUs.index');
+
+    Route::get('/nutritionUs/{id}', function (string $id) {
+        if (auth()->user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized');
+        }
+
+        $menu = NutritionRecommendation::findOrFail($id);
+        return view('nutritionUs.show', compact('menu'));
+    })->name('nutritionUs.show');
+});
 
 
-Route::get('/nutritionUs/{id}', function (string $id) {
-    $menu = NutritionRecommendation::find($id);
-    return view('nutritionUs.show', compact('menu'));
-} )->name('nutritionUs.show');
-
-Route::get('/nutritionUs', function (Request $request) {
-
-    $kategori = $request->query('kategori');
-
-    if ($kategori) {
-        $menus = NutritionRecommendation::where('category', $kategori)->get();
-
-    } else {
-        $menus = NutritionRecommendation::all();
-    }
-
-    return view('nutritionUs.index', compact('menus', 'kategori'));
-
-} )->name('nutritionUs.index');
 
 //artikel
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -125,7 +132,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 // artikel Ini DIPISAH dari admin
-Route::prefix('orangtua/artikel')->name('orangtua.artikel.')->group(function () {
+Route::prefix('user/artikel')->name('user.artikel.')->group(function () {
     Route::get('/', [UserArtikelController::class, 'index'])->name('index');
     Route::get('/{id}', [UserArtikelController::class, 'show'])->name('show');
 });
