@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalkulator BMI</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-100 justify-center items-center min-h-screen p-12">
     <!-- Top Bar -->
@@ -107,8 +108,12 @@
                 @endisset
             </tbody>
         </table>
+        
     </div>
-
+    <div class="mt-10 bg-white p-4 rounded-lg shadow-md">
+    <h2 class="text-lg font-semibold mb-2">Grafik Perkembangan BMI</h2>
+    <canvas id="bmiChart" height="100"></canvas>
+    </div>
 
     <script>
         function setFormAction(event, actionUrl) {
@@ -117,5 +122,110 @@
             document.getElementById('bmiForm').submit(); // Submit the form with new action
         }
     </script>
+
+    <script>
+    const labels = @json($bmiRecords->pluck('tanggal'));
+    const data = @json($bmiRecords->pluck('bmi'));
+
+    const ctx = document.getElementById('bmiChart').getContext('2d');
+    const bmiChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'BMI Score',
+                data: data,
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 5,
+                pointHoverRadius: 7
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: false
+                }
+             }
+          }
+        });
+    </script>
+
+@if ($lastBmi)
+<div class="max-w-5xl w-full mx-auto bg-gray-200 p-8 rounded-lg shadow-lg mt-8">
+    <h2 class="text-2xl font-semibold mb-6 text-gray-800">🔥 Estimasi Kebutuhan Kalori Harian</h2>
+
+    <form method="POST" action="{{ route('hitungKalori') }}" class="space-y-6">
+        @csrf
+
+        {{-- Gender (otomatis dari data terakhir, tapi masih bisa diubah) --}}
+        <div>
+            <label for="gender" class="block mb-2 font-medium text-gray-700">Jenis Kelamin</label>
+            <select id="gender" name="gender" required
+            class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="pria" {{ old('gender', $lastBmi->gender) == 'pria' ? 'selected' : '' }}>Pria</option>
+            <option value="wanita" {{ old('gender', $lastBmi->gender) == 'wanita' ? 'selected' : '' }}>Wanita</option>
+            </select>
+        </div>
+
+        {{-- Berat Badan --}}
+        <div>
+            <label for="berat" class="block mb-2 font-medium text-gray-700">Berat Badan (kg)</label>
+            <input id="berat" name="berat" type="number" step="0.1" required
+            value="{{ old('berat', $lastBmi->berat) }}"
+            class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        {{-- Tinggi Badan --}}
+        <div>
+            <label for="tinggi" class="block mb-2 font-medium text-gray-700">Tinggi Badan (cm)</label>
+            <input id="tinggi" name="tinggi" type="number" step="0.1" required
+            value="{{ old('tinggi', $lastBmi->tinggi) }}"
+            class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        {{-- Usia --}}
+        <div>
+            <label for="usia" class="block mb-2 font-medium text-gray-700">Usia (tahun)</label>
+            <input id="usia" name="usia" type="number" required
+            value="{{ old('usia', $lastBmi->usia) }}"
+            class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        {{-- Level Aktivitas --}}
+        <div>
+            <label for="activity_level" class="block mb-2 font-medium text-gray-700">Level Aktivitas</label>
+            <select id="activity_level" name="activity_level" class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                <option value="sedentary" {{ ($lastBmi->activity_level == 'sedentary') ? 'selected' : '' }}>Tidak aktif (sedikit atau tidak ada olahraga)</option>
+                <option value="lightly_active" {{ ($lastBmi->activity_level == 'lightly_active') ? 'selected' : '' }}>Sedikit aktif (olahraga ringan 1–3 hari/minggu)</option>
+                <option value="moderately_active" {{ ($lastBmi->activity_level == 'moderately_active') ? 'selected' : '' }}>Cukup aktif (olahraga sedang 3–5 hari/minggu)</option>
+                <option value="very_active" {{ ($lastBmi->activity_level == 'very_active') ? 'selected' : '' }}>Sangat aktif (olahraga keras 6–7 hari/minggu)</option>
+                <option value="extra_active" {{ ($lastBmi->activity_level == 'extra_active') ? 'selected' : '' }}>Ekstra aktif (kerja fisik berat atau 2x olahraga/hari)</option>
+            </select>
+        </div>
+
+        {{-- Tombol Hitung --}}
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-md transition">Hitung Estimasi Kalori</button>
+    </form>
+      @endif
+    {{-- Hasil Kalori Ditampilkan --}}
+    @if(session('kalori'))
+        <div class="mt-6 bg-green-100 border border-green-400 text-green-800 p-4 rounded shadow">
+            <h2 class="text-lg font-bold">🔥 Estimasi Kebutuhan Kalori Harian</h2>
+            <ul class="list-disc ml-5 mt-2">
+                <li>Berat: {{ session('berat') }} kg</li>
+                <li>Tinggi: {{ session('tinggi') }} cm</li>
+                <li>Usia: {{ session('usia') }} tahun</li>
+                <li>Gender: {{ session('gender') }}</li>
+                <li>Aktivitas: {{ session('activity_level') }}</li>
+            </ul>
+            <p class="mt-3 font-semibold">Total Kalori per Hari: {{ session('kalori') }} kcal</p>
+        </div>
+    @endif
+
+
 </body>
 </html>

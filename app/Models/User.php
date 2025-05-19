@@ -13,4 +13,9 @@ class User extends Authenticatable
     protected $fillable = ['nama_anak', 'nik_anak', 'password', 'role'];
 
     protected $hidden = ['password'];
+    ####
+    public function bmi()
+    {
+        return $this->hasMany(Bmi::class);
+    }
 }

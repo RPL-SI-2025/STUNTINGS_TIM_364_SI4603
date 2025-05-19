@@ -78,6 +78,9 @@ Route::post('/simpan-bmi', [BMICalculatorController::class, 'save'])->name('simp
 Route::post('/reset-bmi', [BMICalculatorController::class, 'reset'])->name('reset-bmi');
 Route::post('/hapus-bmi/{index}', [BMICalculatorController::class, 'deleteRow'])->name('hapus-bmi-row');
 Route::get('/bmi', [BMICalculatorController::class, 'showBmiData'])->name('bmi');
+Route::post('/kalori-harian', [BMICalculatorController::class, 'hitungKalori'])->name('kalori-harian');
+Route::post('/calculate-calories', [BMICalculatorController::class, 'calculateCalories'])->name('calculate.calories');
+Route::post('/hitung-kalori', [BMICalculatorController::class, 'hitungKalori'])->name('hitungKalori');
 
 //nutrition 
 Route::get('/nutrition', [NutritionController::class, 'index'])->name('nutrition.index');

@@ -18,6 +18,13 @@ class Bmi extends Model
         'berat',
         'bmi',
         'status',
+        'usia',
+        'activity_level',
+        
+    ];
+
+    protected $casts = [
+        'bmi' => 'float',
     ];
 
     /**
