@@ -13,24 +13,34 @@ class UserArtikelController extends Controller
     public function index(Request $request)
     {
         $kategoriIds = $request->input('kategori', []);
+        $search = $request->input('search');
         $kategoris = ArtikelKategori::all();
 
+        $artikels = Artikel::query();
+
         if (!empty($kategoriIds)) {
-            $artikels = Artikel::whereHas('kategoris', function ($query) use ($kategoriIds) {
+            $artikels->whereHas('kategoris', function ($query) use ($kategoriIds) {
                 $query->whereIn('artikel_kategori_id', $kategoriIds);
-            })->get();
-        } else {
-            $artikels = Artikel::all();
+            });
         }
 
-        return view('orangtua.artikel.index', compact('artikels', 'kategoris', 'kategoriIds'));
+        if (!empty($search)) {
+            $artikels->where('title', 'like', '%' . $search . '%');
+        }
+
+        return view('orangtua.artikel.index', [
+            'artikels' => $artikels->latest()->get(),
+            'kategoris' => $kategoris,
+            'kategoriIds' => $kategoriIds,
+        ]);
     }
 
 
     // Tampilkan detail satu artikel
     public function show($id)
     {
-        $artikel = Artikel::findOrFail($id);
+        $artikel = Artikel::with('kategoris')->findOrFail($id);
+        return view('orangtua.artikel.show', compact('artikel'));
 
         // Tambah 1 view setiap kali artikel dibuka oleh user
         $artikel->increment('views');

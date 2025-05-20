@@ -26,7 +26,7 @@
 
     .card {
         background-color: #ffffff;
-        flex: 1 1 calc(33.333% - 1rem); /* Maks 3 per baris */
+        flex: 1 1 calc(33.333% - 1rem);
         max-width: calc(33.333% - 1rem);
         border-radius: 1rem;
         overflow: hidden;
@@ -34,7 +34,6 @@
         display: flex;
         flex-direction: column;
     }
-
 
     .article-image {
         width: 100%;
@@ -72,7 +71,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: 1rem;
+        margin-bottom: 0.75rem;
     }
 
     .view-count {
@@ -118,7 +117,6 @@
         background-color: #00546b;
     }
 
-    /* Modal */
     #filterModal {
         display: none;
         position: fixed;
@@ -162,12 +160,10 @@
 
 <a href="{{ route('admin.artikel.create') }}" class="add-button">+ New Article</a>
 
-<!-- Tombol buka modal -->
 <div style="text-align: center; margin-bottom: 1.5rem;">
     <button onclick="toggleModal()" class="btn">🔍 Filter Kategori</button>
 </div>
 
-<!-- Modal Filter -->
 <div id="filterModal">
     <div class="modal-content">
         <h2>Pilih Kategori</h2>
@@ -206,27 +202,32 @@
             @endif
 
             <div class="card-body">
-                <div class="card-title">{{ $artikel->title }}</div>
-
-                <div style="margin-bottom: 0.5rem;">
-                    @foreach ($artikel->kategoris as $kategori)
-                        <span class="badge">#{{ $kategori->name }}</span>
-                    @endforeach
-                </div>
-
-                <div class="card-actions">
-                    <div class="view-count">👁 {{ $artikel->views ?? 0 }}</div>
-                    <div>
-                        <a href="{{ route('admin.artikel.edit', $artikel->id) }}" class="btn-icon" title="Edit">✏️</a>
-                        <form action="{{ route('admin.artikel.destroy', $artikel->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn-icon" title="Delete" onclick="return confirm('Hapus artikel ini?')">🗑️</button>
-                        </form>
+                <div>
+                    <div class="card-title">{{ $artikel->title }}</div>
+                    <div style="margin-bottom: 0.5rem;">
+                        @foreach ($artikel->kategoris->take(3) as $kategori)
+                            <span class="badge">#{{ $kategori->name }}</span>
+                        @endforeach
+                        @if ($artikel->kategoris->count() > 3)
+                            <span class="badge">...</span>
+                        @endif
                     </div>
                 </div>
 
-                <a href="{{ route('admin.artikel.show', $artikel->id) }}" class="btn" style="margin-top: 0.75rem;">Read All</a>
+                <div style="margin-top: auto;">
+                    <div class="card-actions">
+                        <div class="view-count">👁 {{ $artikel->views ?? 0 }}</div>
+                        <div style="display: flex; gap: 0.4rem;">
+                            <a href="{{ route('admin.artikel.edit', $artikel->id) }}" class="btn-icon" title="Edit">✏️</a>
+                            <form action="{{ route('admin.artikel.destroy', $artikel->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-icon" title="Delete" onclick="return confirm('Hapus artikel ini?')">🗑️</button>
+                            </form>
+                        </div>
+                    </div>
+                    <a href="{{ route('admin.artikel.show', $artikel->id) }}" class="btn" style="width: 100%; text-align: center;">Read All</a>
+                </div>
             </div>
         </div>
     @empty
