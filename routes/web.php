@@ -13,7 +13,6 @@ use App\Models\NutritionRecommendation;
 use App\Http\Controllers\ArtikelController;
 use App\Http\Controllers\UserArtikelController;
 use App\Http\Controllers\DetectionController;
-use App\Http\Controllers\AuthController;
 
 // Halaman awal redirect ke login
 Route::get('/', function () {
@@ -33,58 +32,60 @@ Route::middleware(['auth'])->group(function () {
     // Admin Dashboard
     Route::get('/admin/dashboard', function () {
         if (auth()->user()->role !== 'admin') {
-        if (Auth::user()->role !== 'admin') {
             abort(403);
         }
         return view('admin.dashboard');
     })->name('admin.dashboard');
-        
+
     // Orangtua Dashboard
     Route::get('/user/dashboard', function () {
         if (auth()->user()->role !== 'orangtua') {
-        if (Auth::user()->role !== 'orangtua') {
             abort(403);
         }
         return view('orangtua.dashboard');
     })->name('orangtua.dashboard');
 
-    // Orangtua fitur deteksi
-    Route::get('/orangtua/deteksi-stunting', [DetectionController::class, 'create'])->name('orangtua.detections.create');
-    Route::post('/orangtua/deteksi-stunting', [DetectionController::class, 'store'])->name('orangtua.detections.store');
+    // Admin routes
+    Route::prefix('admin')->name('admin.')->group(function () {
+        // Data imunisasi
+        Route::resource('immunizations', ImmunizationController::class);
 
-    // Admin fitur lihat semua deteksi
-    Route::get('/admin/detections', [DetectionController::class, 'index'])->name('admin.detections.index');
-});
+        // Tahapan perkembangan
+        Route::resource('tahapan_perkembangan', TahapanPerkembanganController::class);
+        Route::get('perkembangan/create', [TahapanPerkembanganController::class, 'create'])->name('perkembangan.create');
 
-// Orangtua fitur deteksi
-Route::middleware(['auth'])->prefix('orangtua')->name('orangtua.')->group(function () {
-    Route::get('/deteksi-stunting', [DetectionController::class, 'create'])->name('detections.create');
-    Route::post('/deteksi-stunting', [DetectionController::class, 'store'])->name('detections.store');
-    Route::delete('/detections/{id}', [DetectionController::class, 'destroy'])->name('detections.destroy'); // Hapus deteksi
-});
+        // Deteksi dari semua user
+        Route::get('/detections', [DetectionController::class, 'index'])->name('detections.index');
 
-// Admin fitur lihat semua deteksi
-Route::get('/admin/detections', [DetectionController::class, 'index'])->name('admin.detections.index');
+        // Artikel
+        Route::get('/artikel', [ArtikelController::class, 'index'])->name('artikel.index');
+        Route::get('/artikel/create', [ArtikelController::class, 'create'])->name('artikel.create');
+        Route::post('/artikel', [ArtikelController::class, 'store'])->name('artikel.store');
+        Route::get('/artikel/{id}', [ArtikelController::class, 'show'])->name('artikel.show');
+        Route::get('/artikel/{id}/edit', [ArtikelController::class, 'edit'])->name('artikel.edit');
+        Route::put('/artikel/{id}', [ArtikelController::class, 'update'])->name('artikel.update');
+        Route::delete('/artikel/{id}', [ArtikelController::class, 'destroy'])->name('artikel.destroy');
+    });
 
-// Master data
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    Route::resource('immunizations', ImmunizationController::class);
-});
+    // Orangtua routes
+    Route::prefix('orangtua')->name('orangtua.')->group(function () {
+        // Deteksi stunting
+        Route::get('/deteksi-stunting', [DetectionController::class, 'create'])->name('detections.create');
+        Route::post('/deteksi-stunting', [DetectionController::class, 'store'])->name('detections.store');
+        Route::delete('/detections/{id}', [DetectionController::class, 'destroy'])->name('detections.destroy');
 
-// Record imunisasi
-Route::middleware(['auth'])->prefix('orangtua')->name('orangtua.')->group(function () {
-    Route::resource('immunization_records', ImmunizationRecordController::class);
-});
+        // Record imunisasi
+        Route::resource('immunization_records', ImmunizationRecordController::class);
 
-// Admin routes
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    Route::resource('tahapan_perkembangan', TahapanPerkembanganController::class);
-    Route::get('perkembangan/create', [TahapanPerkembanganController::class, 'create'])->name('perkembangan.create');
-});
+        // Tahapan perkembangan anak
+        Route::resource('tahapan_perkembangan', TahapanPerkembanganDataController::class);
 
-// User routes (Orang Tua)
-Route::middleware(['auth'])->prefix('orangtua')->name('orangtua.')->group(function () {
-    Route::resource('tahapan_perkembangan', TahapanPerkembanganDataController::class);
+        // Artikel user
+        Route::prefix('artikel')->name('artikel.')->group(function () {
+            Route::get('/', [UserArtikelController::class, 'index'])->name('index');
+            Route::get('/{id}', [UserArtikelController::class, 'show'])->name('show');
+        });
+    });
 });
 
 // BMI
@@ -94,14 +95,15 @@ Route::post('/simpan-bmi', [BMICalculatorController::class, 'save'])->name('simp
 Route::post('/reset-bmi', [BMICalculatorController::class, 'reset'])->name('reset-bmi');
 Route::post('/hapus-bmi/{index}', [BMICalculatorController::class, 'deleteRow'])->name('hapus-bmi-row');
 
-// Nutrition
+// Nutrition Admin
 Route::get('/nutrition', [NutritionController::class, 'index'])->name('nutrition.index');
 Route::get('/nutrition/create', [NutritionController::class, 'create'])->name('nutrition.create');
 Route::post('/nutrition', [NutritionController::class, 'store'])->name('nutrition.store');
 Route::get('/nutrition/{id}/edit', [NutritionController::class, 'edit'])->name('nutrition.edit');
 Route::put('/nutrition/{id}', [NutritionController::class, 'update'])->name('nutrition.update');
-Route::delete('/nutrition/{id}', [NutritionController::class, 'delet'])->name('nutrition.delet');
+Route::delete('/nutrition/{id}', [NutritionController::class, 'delet'])->name('nutrition.delet'); // typo di "delet" seharusnya "destroy" ?
 
+// Nutrition User
 Route::get('/nutritionUs', function () {
     $menus = NutritionRecommendation::all();
     return view('nutritionUs.index', compact('menus'));
@@ -111,21 +113,3 @@ Route::get('/nutritionUs/{id}', function (string $id) {
     $menu = NutritionRecommendation::find($id);
     return view('nutritionUs.show', compact('menu'));
 })->name('nutritionUs.show');
-
-// Artikel (admin)
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/artikel', [ArtikelController::class, 'index'])->name('artikel.index');
-    Route::get('/artikel/create', [ArtikelController::class, 'create'])->name('artikel.create');
-    Route::post('/artikel', [ArtikelController::class, 'store'])->name('artikel.store');
-    Route::get('/artikel/{id}', [ArtikelController::class, 'show'])->name('artikel.show');
-    Route::get('/artikel/{id}/edit', [ArtikelController::class, 'edit'])->name('artikel.edit');
-    Route::put('/artikel/{id}', [ArtikelController::class, 'update'])->name('artikel.update');
-    Route::delete('/artikel/{id}', [ArtikelController::class, 'destroy'])->name('artikel.destroy');
-});
-
-// Artikel (user / orangtua)
-Route::prefix('orangtua/artikel')->name('orangtua.artikel.')->group(function () {
-    Route::get('/', [UserArtikelController::class, 'index'])->name('index');
-    Route::get('/{id}', [UserArtikelController::class, 'show'])->name('show');
-});
-

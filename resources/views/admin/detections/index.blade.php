@@ -10,6 +10,22 @@
 <div class="container mt-5">
     <h2>Data Deteksi Stunting (Admin)</h2>
 
+    <!-- Form filter berdasarkan nama -->
+    <form method="GET" action="{{ url()->current() }}" class="mb-4">
+        <div class="input-group" style="max-width: 400px;">
+            <input
+                type="text"
+                name="nama"
+                class="form-control"
+                placeholder="Cari berdasarkan nama"
+                value="{{ old('nama', $filterNama ?? '') }}"
+                autocomplete="off"
+            >
+            <button class="btn btn-primary" type="submit">Filter</button>
+            <a href="{{ url()->current() }}" class="btn btn-secondary">Reset</a>
+        </div>
+    </form>
+
     <table class="table table-bordered table-striped mt-4">
         <thead>
             <tr>

@@ -8,14 +8,24 @@ use Illuminate\Http\Request;
 class DetectionController extends Controller
 {
     // jadi ini buat si admin doang
-    public function index()
+    public function index(Request $request)
     {
         if (auth()->user()->role !== 'admin') {
             abort(403, 'Unauthorized');
         }
 
-        $semua = Detection::latest()->get();
-        return view('admin.detections.index', compact('semua'));
+        $query = Detection::query();
+
+        if ($request->has('nama') && !empty($request->nama)) {
+            $query->where('nama', 'like', '%' . $request->nama . '%');
+        }
+
+        $semua = $query->latest()->get();
+
+        return view('admin.detections.index', [
+            'semua' => $semua,
+            'filterNama' => $request->nama ?? '',
+        ]);
     }
 
     // yang ini buat ortu doang
@@ -95,15 +105,15 @@ class DetectionController extends Controller
 
     public function destroy($id)
     {
-    $detection = Detection::findOrFail($id);
+        $detection = Detection::findOrFail($id);
 
-    // Cek apakah data ini milik user yang sedang login
-    if ($detection->user_id !== auth()->id()) {
-        abort(403, 'Akses ditolak');
-    }
+        // Cek apakah data ini milik user yang sedang login
+        if ($detection->user_id !== auth()->id()) {
+            abort(403, 'Akses ditolak');
+        }
 
-    $detection->delete();
+        $detection->delete();
 
-    return redirect()->back()->with('success', 'Data deteksi berhasil dihapus.');
+        return redirect()->back()->with('success', 'Data deteksi berhasil dihapus.');
     }
 }
