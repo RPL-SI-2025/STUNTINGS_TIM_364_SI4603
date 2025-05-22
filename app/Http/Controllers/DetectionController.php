@@ -92,4 +92,18 @@ class DetectionController extends Controller
             'semua' => $semua,
         ]);
     }
+
+    public function destroy($id)
+    {
+    $detection = Detection::findOrFail($id);
+
+    // Cek apakah data ini milik user yang sedang login
+    if ($detection->user_id !== auth()->id()) {
+        abort(403, 'Akses ditolak');
+    }
+
+    $detection->delete();
+
+    return redirect()->back()->with('success', 'Data deteksi berhasil dihapus.');
+    }
 }
