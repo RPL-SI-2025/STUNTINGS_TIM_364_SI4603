@@ -18,7 +18,9 @@ use App\Http\Controllers\{
 };
 use App\Models\NutritionRecommendation;
 
-Route::get('/', fn () => redirect('/login'));
+Route::get('/', function () {
+    return redirect('/login');
+});
 
 // Auth
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -30,12 +32,18 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Dashboard
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/dashboard', function () {
-        if (Auth::user()->role !== 'admin') abort(403);
+        if (Auth::user()->role !== 'admin') {
+            abort(403);
+        }
+
         return view('admin.dashboard');
     })->name('admin.dashboard');
 
     Route::get('/orangtua/dashboard', function () {
-        if (Auth::user()->role !== 'orangtua') abort(403);
+        if (Auth::user()->role !== 'orangtua') {
+            abort(403);
+        }
+
         return view('orangtua.dashboard');
     })->name('orangtua.dashboard');
 });
@@ -46,7 +54,6 @@ Route::post('/orangtua/deteksi-stunting', [DetectionController::class, 'store'])
 Route::get('/admin/detections', [DetectionController::class, 'index'])->name('admin.detections.index');
 
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
-
     // 🔹 Kategori Artikel
     Route::prefix('artikel/kategori')->name('artikel.kategori.')->group(function () {
         Route::get('/', [ArtikelKategoriController::class, 'index'])->name('index');
@@ -69,13 +76,14 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     });
 
     // 🔹 Imunisasi
-    Route::resource('immunizations', ImmunizationController::class);
+    Route::resource('immunizations', ImmunizationController::class); 
 
     // 🔹 Tahapan Perkembangan
     Route::resource('tahapan_perkembangan', TahapanPerkembanganController::class);
     
     // (Opsional) Jika butuh route tambahan untuk form `create`
     Route::get('perkembangan/create', [TahapanPerkembanganController::class, 'create'])->name('perkembangan.create');
+    Route::resource('nutrition', NutritionController::class)->except(['show']);
 });
 
 // Artikel User
@@ -124,3 +132,4 @@ Route::post('/hitung-bmi', [BMICalculatorController::class, 'calculate'])->name(
 Route::post('/simpan-bmi', [BMICalculatorController::class, 'save'])->name('simpan-bmi');
 Route::post('/reset-bmi', [BMICalculatorController::class, 'reset'])->name('reset-bmi');
 Route::post('/hapus-bmi/{index}', [BMICalculatorController::class, 'deleteRow'])->name('hapus-bmi-row');
+

@@ -9,17 +9,29 @@ class NutritionController extends Controller
 {
     public function index()
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $menus = NutritionRecommendation::all();
-        return view('nutrition.index', compact('menus'));
+        return view('admin.nutrition.index', compact('menus'));
     }
 
     public function create()
     {
-        return view('nutrition.create');
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
+        return view('admin.nutrition.create');
     }
 
     public function store(Request $request)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $request->validate([
             'name' => 'required',
             'nutrition' => 'required',
@@ -37,17 +49,25 @@ class NutritionController extends Controller
 
         NutritionRecommendation::create($data);
 
-        return redirect()->route('nutrition.index')->with('success', 'Menu berhasil ditambahkan');
+        return redirect()->route('admin.nutrition.index')->with('success', 'Menu berhasil ditambahkan');
     }
 
     public function edit($id)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $menu = NutritionRecommendation::findOrFail($id);
-        return view('nutrition.edit', compact('menu'));
+        return view('admin.nutrition.edit', compact('menu'));
     }
 
     public function update(Request $request, $id)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $menu = NutritionRecommendation::findOrFail($id);
 
         $request->validate([
@@ -67,14 +87,28 @@ class NutritionController extends Controller
 
         $menu->update($data);
 
-        return redirect()->route('nutrition.index')->with('success', 'Menu berhasil diperbarui');
+        return redirect()->route('admin.nutrition.index')->with('success', 'Menu berhasil diperbarui');
     }
 
-    public function delet($id)
+    public function destroy($id)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $menu = NutritionRecommendation::findOrFail($id);
         $menu->delete();
 
-        return redirect()->route('nutrition.index')->with('success', 'Menu berhasil dihapus');
+        return redirect()->route('admin.nutrition.index')->with('success', 'Menu berhasil dihapus');
+    }
+
+    public function user()
+    {
+        if (auth()->user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized');
+        }
+
+        $menus = NutritionRecommendation::all();
+        return view('orangtua.nutrition.index', compact('menus'));
     }
 }
