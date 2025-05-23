@@ -14,7 +14,7 @@ class NutritionController extends Controller
         }
 
         $menus = NutritionRecommendation::all();
-        return view('nutrition.index', compact('menus'));
+        return view('admin.nutrition.index', compact('menus'));
     }
 
     public function create()
@@ -23,7 +23,7 @@ class NutritionController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        return view('nutrition.create');
+        return view('admin.nutrition.create');
     }
 
     public function store(Request $request)
@@ -49,7 +49,7 @@ class NutritionController extends Controller
 
         NutritionRecommendation::create($data);
 
-        return redirect()->route('nutrition.index')->with('success', 'Menu berhasil ditambahkan');
+        return redirect()->route('admin.nutrition.index')->with('success', 'Menu berhasil ditambahkan');
     }
 
     public function edit($id)
@@ -59,7 +59,7 @@ class NutritionController extends Controller
         }
 
         $menu = NutritionRecommendation::findOrFail($id);
-        return view('nutrition.edit', compact('menu'));
+        return view('admin.nutrition.edit', compact('menu'));
     }
 
     public function update(Request $request, $id)
@@ -87,19 +87,19 @@ class NutritionController extends Controller
 
         $menu->update($data);
 
-        return redirect()->route('nutrition.index')->with('success', 'Menu berhasil diperbarui');
+        return redirect()->route('admin.nutrition.index')->with('success', 'Menu berhasil diperbarui');
     }
 
-    public function delet($id)
+    public function destroy($id)
     {
         if (auth()->user()->role !== 'admin') {
             abort(403, 'Unauthorized');
         }
 
         $menu = NutritionRecommendation::findOrFail($id);
-        $menu->delet();
+        $menu->delete();
 
-        return redirect()->route('nutrition.index')->with('success', 'Menu berhasil dihapus');
+        return redirect()->route('admin.nutrition.index')->with('success', 'Menu berhasil dihapus');
     }
 
     public function user()

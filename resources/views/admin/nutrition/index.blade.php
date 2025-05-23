@@ -4,7 +4,7 @@
 
 <div class="container">
     <h2 class="mb-4">Daftar Menu Nutrisi</h2>
-    <a href="{{ route('nutrition.create') }}" class="btn btn-primary mb-4">
+    <a href="{{ route('admin.nutrition.create') }}" class="btn btn-primary mb-4">
         <i class="bi bi-plus-circle me-1"></i> Tambah Menu
     </a>
 
@@ -25,10 +25,10 @@
                     
                     {{-- Tombol Aksi --}}
                     <div class="d-flex gap-2">
-                        <a href="{{ route('nutrition.edit', $menu->id) }}" class="btn btn-outline-primary btn-sm">
+                        <a href="{{ route('admin.nutrition.edit', $menu->id) }}" class="btn btn-outline-primary btn-sm">
                             <i class="bi bi-pencil-square me-1"></i>Edit
                         </a>
-                        <form action="{{ route('nutrition.delet', $menu->id) }}" method="POST" onsubmit="return confirm('Yakin ingin hapus?')">
+                        <form action="{{ route('admin.nutrition.destroy', $menu->id) }}" method="POST" onsubmit="return confirm('Yakin ingin hapus?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-outline-danger btn-sm">

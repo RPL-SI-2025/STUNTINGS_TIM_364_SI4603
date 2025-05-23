@@ -80,12 +80,12 @@ Route::get('/bmi', [BMICalculatorController::class, 'showBmiData'])->name('bmi')
 
 // Route untuk ADMIN (CRUD data gizi)
 Route::middleware(['auth'])->group(function () {
-    Route::get('/nutrition', [NutritionController::class, 'index'])->name('nutrition.index');
-    Route::get('/nutrition/create', [NutritionController::class, 'create'])->name('nutrition.create');
-    Route::post('/nutrition', [NutritionController::class, 'store'])->name('nutrition.store');
-    Route::get('/nutrition/{id}/edit', [NutritionController::class, 'edit'])->name('nutrition.edit');
-    Route::put('/nutrition/{id}', [NutritionController::class, 'update'])->name('nutrition.update');
-    Route::delete('/nutrition/{id}', [NutritionController::class, 'delet'])->name('nutrition.delet');
+    Route::get('/nutrition', [NutritionController::class, 'index'])->name('admin.nutrition.index');
+    Route::get('/nutrition/create', [NutritionController::class, 'create'])->name('admin.nutrition.create');
+    Route::post('/nutrition', [NutritionController::class, 'store'])->name('admin.nutrition.store');
+    Route::get('/nutrition/{id}/edit', [NutritionController::class, 'edit'])->name('admin.nutrition.edit');
+    Route::put('/nutrition/{id}', [NutritionController::class, 'update'])->name('admin.nutrition.update');
+    Route::delete('/nutrition/{id}', [NutritionController::class, 'destroy'])->name('admin.nutrition.destroy');
 });
 
 // ORANGTUA (akses nutritionUs)
