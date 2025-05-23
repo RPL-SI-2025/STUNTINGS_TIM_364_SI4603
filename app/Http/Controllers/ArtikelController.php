@@ -21,7 +21,9 @@ class ArtikelController extends Controller
                     $q->whereIn('artikel_kategori_id', $kategoriIds);
                 });
             })
-            ->get();
+            ->latest()
+            ->paginate(12)
+            ->withQueryString(); // Gantikan appends() dengan ini
 
         return view('admin.artikel.index', compact('artikels', 'kategoris', 'kategoriIds'));
     }

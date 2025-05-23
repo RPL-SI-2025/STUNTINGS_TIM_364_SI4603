@@ -91,7 +91,7 @@
     <table>
         <thead>
             <tr>
-                <th>#</th>
+                <th>#ID</th>
                 <th>Nama Kategori</th>
                 <th>Aksi</th>
             </tr>

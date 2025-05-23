@@ -9,6 +9,7 @@ class ArtikelKategoriController extends Controller
 {
     public function index()
     {
+        // Ini saja cukup, tanpa perlu whereNull('deleted_at')
         $kategoris = ArtikelKategori::all();
         return view('admin.artikel.kategori.index', compact('kategoris'));
     }
@@ -51,7 +52,10 @@ class ArtikelKategoriController extends Controller
 
     public function destroy(ArtikelKategori $kategori)
     {
-        $kategori->delete();
+        $kategori->delete(); // Soft delete
+    
         return redirect()->route('admin.artikel.kategori.index')->with('success', 'Kategori berhasil dihapus.');
+
+         
     }
 }

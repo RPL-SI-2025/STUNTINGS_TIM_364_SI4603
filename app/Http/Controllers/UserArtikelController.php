@@ -29,11 +29,12 @@ class UserArtikelController extends Controller
         }
 
         return view('orangtua.artikel.index', [
-            'artikels' => $artikels->latest()->get(),
+            'artikels' => $artikels->latest()->paginate(12)->appends($request->query()),
             'kategoris' => $kategoris,
             'kategoriIds' => $kategoriIds,
         ]);
     }
+
 
 
     // Tampilkan detail satu artikel

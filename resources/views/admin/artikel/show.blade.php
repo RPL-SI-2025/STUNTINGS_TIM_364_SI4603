@@ -9,81 +9,88 @@
         padding: 0;
     }
 
-    .main-title {
-        text-align: center;
-        color: #005f77;
-        font-size: 2rem;
-        margin: 2rem 0 1rem;
-    }
-
-    .table-container {
+    .container {
         max-width: 900px;
-        margin: 0 auto 2rem auto;
-        background-color: #f3f4f6;
-        padding: 2rem;
+        margin: 2rem auto;
+        padding: 1.5rem;
+        background-color: #ffffff;
         border-radius: 1rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        position: relative;
     }
 
-    .artikel-title {
-        font-size: 1.5rem;
+    .judul-artikel {
+        font-size: 2rem;
         font-weight: bold;
         color: #1f2937;
-        margin-bottom: 0.75rem;
+        margin-bottom: 1rem;
         text-align: center;
-        overflow-wrap: break-word;
         word-break: break-word;
     }
 
     .artikel-meta {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         color: #6b7280;
         text-align: center;
         margin-bottom: 1.5rem;
     }
 
-    .artikel-image {
-        width: 100%;
-        max-width: 600px;
-        max-height: 300px;
-        object-fit: cover;
+    .badge {
+        display: inline-block;
+        background-color: #d1fae5;
+        color: #065f46;
+        font-size: 0.75rem;
+        padding: 0.2rem 0.5rem;
+        margin: 0.2rem 0.25rem 0 0;
         border-radius: 0.5rem;
-        margin: 0 auto 1.5rem;
-        display: block;
     }
 
-    .artikel-content {
+    .artikel-image {
+        width: 100%;
+        max-height: 350px;
+        object-fit: cover;
+        border-radius: 0.75rem;
+        margin-bottom: 2rem;
+    }
+
+    .content {
         color: #374151;
         line-height: 1.8;
+        font-size: 1rem;
         white-space: pre-line;
-        overflow-wrap: break-word;
         word-break: break-word;
     }
 
-    .back-button {
-        display: inline-block;
-        margin-top: 2rem;
+    .btn-back {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        padding: 0.6rem 1.2rem;
         background-color: #005f77;
         color: white;
-        padding: 0.5rem 1rem;
+        border: none;
         border-radius: 0.5rem;
+        font-size: 0.85rem;
+        font-weight: 600;
         text-decoration: none;
-        font-weight: bold;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         transition: background-color 0.3s ease;
+        z-index: 1000;
     }
 
-    .back-button:hover {
+    .btn-back:hover {
         background-color: #014f66;
     }
 </style>
 
-<h1 class="main-title">Detail Artikel</h1>
-
-<div class="table-container">
-    <div class="artikel-title">{{ $artikel->title }}</div>
+<div class="container">
+    <h1 class="judul-artikel">{{ $artikel->title }}</h1>
 
     <div class="artikel-meta">
-        <strong>Kategori:</strong> {{ $artikel->kategoris->pluck('name')->join(', ') }}
+        @foreach ($artikel->kategoris as $kategori)
+            <span class="badge">#{{ $kategori->name }}</span>
+        @endforeach
+        <div style="margin-top: 0.5rem;">👁 {{ $artikel->views ?? 0 }} views</div>
     </div>
 
     @if ($artikel->image)
@@ -92,10 +99,10 @@
         <img src="{{ asset('default-image.png') }}" alt="Gambar Default" class="artikel-image">
     @endif
 
-    <div class="artikel-content">
+    <div class="content">
         {!! nl2br(e($artikel->content)) !!}
     </div>
-
-    <a href="{{ route('admin.artikel.index') }}" class="back-button">← Kembali ke daftar artikel</a>
 </div>
+
+<a href="{{ route('admin.artikel.index') }}" class="btn-back">← Kembali</a>
 @endsection

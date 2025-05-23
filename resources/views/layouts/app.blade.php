@@ -19,7 +19,7 @@
     {{-- Custom Styles --}}
     <style>
         body {
-            padding-top: 80px;
+            padding-top: 60px;
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(to right, #fdfbfb, #ebedee);
         }
@@ -27,6 +27,9 @@
         .navbar {
             background-color: #ffffff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding-top: 0.3rem;
+            padding-bottom: 0.3rem;
+            height: 56px;
         }
 
         .navbar-brand {
@@ -35,7 +38,7 @@
         }
 
         main.container {
-            max-width: 800px;
+            max-width: 1280px;
         }
 
         .content-card {
@@ -53,9 +56,8 @@
     </style>
 </head>
 <body>
-    {{-- Navbar --}}
-    <nav class="navbar fixed-top navbar-expand-lg">
-        <div class="container">
+    <nav class="navbar fixed-top navbar-expand-lg px-4"> {{-- gunakan padding --}}
+        <div class="d-flex w-100 justify-content-between align-items-center">
             <a class="navbar-brand" href="#">Dashboard</a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
