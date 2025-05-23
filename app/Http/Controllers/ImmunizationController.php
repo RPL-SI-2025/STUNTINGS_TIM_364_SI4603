@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Immunization;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class ImmunizationController extends Controller
 {

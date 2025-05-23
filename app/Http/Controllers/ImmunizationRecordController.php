@@ -110,3 +110,4 @@ class ImmunizationRecordController extends Controller
         }
     }
 }
+
