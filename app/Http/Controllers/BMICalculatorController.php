@@ -109,6 +109,8 @@ class BMICalculatorController extends Controller
 
     public function save(Request $request)
     {
+        $tinggiCm = $request->input('tinggi'); // ✅ untuk BMR
+        $tinggi = $tinggiCm / 100;             // ✅ untuk BMI
         $user = Auth::user();  // Get the authenticated user
         $gender = strtolower($request->input('gender'));
         $tinggi = $request->input('tinggi') / 100;
@@ -129,11 +131,25 @@ class BMICalculatorController extends Controller
 
         if ($gender == 'pria' || $gender == 'laki-laki') {
             $status = $this->statusBmiPria($bmi);
+            $bmr = 66 + (13.7 * $berat) + (5 * $tinggiCm) - (6.8 * $usia); // ⬅️ definisikan $bmr
         } elseif ($gender == 'wanita' || $gender == 'perempuan') {
             $status = $this->statusBmiWanita($bmi);
+             $bmr = 655 + (9.6 * $berat) + (1.8 * $tinggiCm) - (4.7 * $usia); // ⬅️ definisikan $bmr
         } else {
             $status = "Gender tidak valid";
+            $bmr = 0;
         }
+
+            // ✅ Tambahkan perhitungan kalori
+        $activity_factors = [
+            'sedentary' => 1.2,
+            'lightly_active' => 1.375,
+            'moderately_active' => 1.55,
+            'very_active' => 1.725,
+            'extra_active' => 1.9,
+        ];
+        $factor = $activity_factors[$activity_level] ?? 1.2;
+        $kalori = round($bmr * $factor);
 
         Bmi::create([
             'user_id' => $user->id,  // Associate the BMI with the authenticated user
