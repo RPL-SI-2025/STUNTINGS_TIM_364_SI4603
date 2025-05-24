@@ -86,6 +86,7 @@
                 <th>Z-Score</th>
                 <th>Status</th>
                 <th>Waktu</th>
+                <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -104,10 +105,17 @@
                     </span>
                 </td>
                 <td>{{ $d->created_at->format('d M Y H:i') }}</td>
+                <td>
+                    <form action="{{ route('orangtua.detections.destroy', $d->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn btn-sm btn-danger">Hapus</button>
+                    </form>
+                </td>
             </tr>
             @empty
             <tr>
-                <td colspan="8">Belum ada data deteksi.</td>
+                <td colspan="9" class="text-center">Belum ada data deteksi.</td>
             </tr>
             @endforelse
         </tbody>

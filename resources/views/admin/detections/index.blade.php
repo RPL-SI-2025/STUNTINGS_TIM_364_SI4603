@@ -10,6 +10,15 @@
 <div class="container mt-5">
     <h2>Data Deteksi Stunting (Admin)</h2>
 
+    <form method="GET" action="{{ route('admin.detections.index') }}" class="row g-3 mt-4">
+        <div class="col-auto">
+            <input type="text" name="search" class="form-control" placeholder="Cari nama user..." value="{{ request('search') }}">
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Cari</button>
+        </div>
+    </form>
+
     <table class="table table-bordered table-striped mt-4">
         <thead>
             <tr>
@@ -26,7 +35,7 @@
         <tbody>
             @forelse ($semua as $d) 
                 <tr>
-                    <td>{{ $d->nama }}</td>
+                    <td>{{ $d->user->nama_anak ?? '-' }}</td>
                     <td>{{ $d->umur }}</td>
                     <td>{{ $d->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}</td>
                     <td>{{ $d->berat_badan }}</td>

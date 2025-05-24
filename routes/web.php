@@ -47,11 +47,16 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Deteksi Stunting (Orangtua)
-Route::get('/user/deteksi-stunting', [DetectionController::class, 'create'])->name('orangtua.detections.create');
-Route::post('/orangtua/deteksi-stunting', [DetectionController::class, 'store'])->name('orangtua.detections.store');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/orangtua/deteksi-stunting', [DetectionController::class, 'create'])->name('orangtua.detections.create');
+    Route::post('/orangtua/deteksi-stunting', [DetectionController::class, 'store'])->name('orangtua.detections.store');
+    Route::delete('/orangtua/deteksi-stunting/{id}', [DetectionController::class, 'destroy'])->name('orangtua.detections.destroy');
+});
 
 // Deteksi Stunting (Admin)
-Route::get('/admin/detections', [DetectionController::class, 'index'])->name('admin.detections.index');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/deteksi-stunting', [DetectionController::class, 'index'])->name('admin.detections.index');
+});
 
 // Master Data (Admin)
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
