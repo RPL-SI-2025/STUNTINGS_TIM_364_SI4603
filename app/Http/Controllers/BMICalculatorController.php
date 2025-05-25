@@ -19,7 +19,7 @@ class BMICalculatorController extends Controller
         $bmiRecords = Bmi::where('user_id', $user->id)->get();
 
         // Ambil data terakhir
-   $lastBmi = Bmi::where('user_id', $user->id)->latest('created_at')->first();
+    $lastBmi = Bmi::where('user_id', $user->id)->latest('created_at')->first();
 
 
     $estimatedCalories = null;
@@ -57,7 +57,7 @@ class BMICalculatorController extends Controller
     }
 
 
-    return view('bmi', [
+    return view('orangtua.bmi.bmi', [
         'bmiRecords' => $bmiRecords,
         'lastBmi' => $lastBmi,
         'estimatedCalories' => $estimatedCalories,
@@ -94,7 +94,7 @@ class BMICalculatorController extends Controller
         session(['berat'=> $berat]);
 
 
-        return redirect('/bmi');
+        return redirect()->route('bmi');
     }
     
     public function reset()
@@ -104,7 +104,7 @@ class BMICalculatorController extends Controller
         session(['tinggi'=> ""]);
         session(['gender'=> ""]);
         session(['berat'=> ""]);
-        return redirect('/bmi');
+        return redirect()->route('bmi');
     }
 
     public function save(Request $request)
@@ -164,7 +164,7 @@ class BMICalculatorController extends Controller
             'kalori' => $kalori,
         ]);
 
-        return redirect('/bmi');
+        return redirect()->route('bmi');
     }
 
 
@@ -200,11 +200,11 @@ class BMICalculatorController extends Controller
    $bmiRecord = Bmi::findOrFail($id);
     $bmiRecord->delete();
 
-    return redirect('/bmi');
+    return redirect()->route('bmi');
 }
 
-public function hitungKalori(Request $request)
-{
+    public function hitungKalori(Request $request)
+    {
     $validated = $request->validate([
         'gender' => 'required|in:pria,wanita',
         'berat' => 'required|numeric|min:10',
