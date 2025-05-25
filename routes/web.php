@@ -74,6 +74,14 @@ Route::post('/simpan-bmi', [BMICalculatorController::class, 'save'])->name('simp
 Route::post('/reset-bmi', [BMICalculatorController::class, 'reset'])->name('reset-bmi');
 Route::post('/hapus-bmi/{index}', [BMICalculatorController::class, 'deleteRow'])->name('hapus-bmi-row');
 
+// Artikel
+// Admin routes
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('artikel', ArtikelController::class);
+});
+Route::resource('artikel', ArtikelController::class)->except(['show']);
+
+
 // Orangtua (Nutrition Recommendation View)
 Route::middleware(['auth'])->group(function () {
 
