@@ -7,13 +7,20 @@ use Illuminate\Http\Request;
 
 class ImmunizationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         if (auth()->user()->role !== 'admin') {
             abort(403, 'Unauthorized');
         }
 
-        $immunizations = Immunization::all();
+        $query = Immunization::query();
+
+        if ($request->has('name') && $request->name != '') {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+
+        $immunizations = $query->get();
+
         return view('admin.immunizations.index', compact('immunizations'));
     }
 
