@@ -32,8 +32,9 @@
     }
 
     input[type="text"],
+    input[type="file"],
     textarea,
-    input[type="file"] {
+    select {
         width: 100%;
         padding: 0.75rem;
         border: 1px solid #d1d5db;
@@ -41,6 +42,10 @@
         margin-top: 0.5rem;
         font-size: 1rem;
         background-color: #fff;
+    }
+
+    select[multiple] {
+        height: auto;
     }
 
     button {
@@ -86,6 +91,16 @@
 
         <label for="image">Gambar (opsional)</label>
         <input type="file" name="image" id="image" accept="image/*">
+
+        <label for="kategori">Pilih Kategori</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+            @foreach ($kategoris as $kategori)
+                <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.95rem;">
+                    <input type="checkbox" name="kategori[]" value="{{ $kategori->id }}">
+                    {{ $kategori->name }}
+                </label>
+            @endforeach
+        </div>
 
         <button type="submit">Publikasikan</button>
     </form>
