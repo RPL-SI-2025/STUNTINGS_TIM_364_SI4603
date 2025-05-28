@@ -1,24 +1,63 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Data Deteksi Stunting (Admin)</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
+@extends('layouts.app')
 
-<div class="container mt-5">
-    <h2>Data Deteksi Stunting (Admin)</h2>
+@section('content')
+<style>
+    .main-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
 
-    <form method="GET" action="{{ route('admin.detections.index') }}" class="row g-3 mt-4">
-        <div class="col-auto">
-            <input type="text" name="search" class="form-control" placeholder="Cari nama user..." value="{{ request('search') }}">
+    .main-title {
+        color: #005f77;
+        font-size: 2rem;
+        margin: 0;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .modal-content {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 8px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
+
+<div class="container">
+
+    {{-- Header Judul dan Tombol --}}
+    <div class="main-header">
+        <h1 class="main-title">Data Deteksi Stunting</h1>
+        <div class="action-buttons">
+            <x-button-icon icon="filter" title="Filter" onclick="toggleFilter()" />
+            <x-button-icon icon="search" title="Cari" onclick="toggleSearch()" />
         </div>
-        <div class="col-auto">
-            <button type="submit" class="btn btn-primary">Cari</button>
-        </div>
-    </form>
+    </div>
 
+    {{-- Tabel --}}
     <table class="table table-bordered table-striped mt-4">
         <thead>
             <tr>
@@ -33,7 +72,7 @@
             </tr>
         </thead>
         <tbody>
-            @forelse ($semua as $d) 
+            @forelse ($semua as $d)
                 <tr>
                     <td>{{ $d->user->nama_anak ?? '-' }}</td>
                     <td>{{ $d->umur }}</td>
@@ -56,7 +95,21 @@
             @endforelse
         </tbody>
     </table>
+
+    {{-- Modal Search --}}
+    <x-modal-search :action="route('admin.detections.index')" />
+
 </div>
 
-</body>
-</html>
+{{-- Script untuk toggle modal --}}
+<script>
+    function toggleSearch() {
+        const modal = document.getElementById('searchModal');
+        if (modal) modal.classList.toggle('hidden');
+    }
+
+    function toggleFilter() {
+        alert('Fitur filter belum tersedia.');
+    }
+</script>
+@endsection
