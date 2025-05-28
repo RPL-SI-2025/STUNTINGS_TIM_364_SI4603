@@ -1,3 +1,4 @@
+
 <!-- resources/views/layouts/app.blade.php -->
 
 <!DOCTYPE html>
@@ -13,10 +14,20 @@
     {{-- Google Fonts --}}
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <script>
+    tailwind.config = {
+        safelist: ['bg-[#005f77]', 'hover:bg-[#014f66]']
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+
     {{-- Custom Styles --}}
     <style>
         body {
-            padding-top: 80px;
+            padding-top: 60px;
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(to right, #fdfbfb, #ebedee);
         }
@@ -24,15 +35,18 @@
         .navbar {
             background-color: #ffffff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding-top: 0.3rem;
+            padding-bottom: 0.3rem;
+            height: 56px;
         }
 
         .navbar-brand {
             font-weight: 600;
-            color: #007BFF !important;
+            color: #005f77 !important;
         }
 
         main.container {
-            max-width: 800px;
+            max-width: 1280px;
         }
 
         .content-card {
@@ -50,9 +64,8 @@
     </style>
 </head>
 <body>
-    {{-- Navbar --}}
-    <nav class="navbar fixed-top navbar-expand-lg">
-        <div class="container">
+    <nav class="navbar fixed-top navbar-expand-lg px-4"> {{-- gunakan padding --}}
+        <div class="d-flex w-100 justify-content-between align-items-center">
             <a class="navbar-brand" href="#">Dashboard</a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -94,5 +107,6 @@
 
     {{-- Bootstrap JS --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
