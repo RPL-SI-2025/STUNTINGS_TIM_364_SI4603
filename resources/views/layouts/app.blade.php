@@ -16,6 +16,14 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
+    <script>
+    tailwind.config = {
+        safelist: ['bg-[#005f77]', 'hover:bg-[#014f66]']
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+
     {{-- Custom Styles --}}
     <style>
         body {
@@ -34,7 +42,7 @@
 
         .navbar-brand {
             font-weight: 600;
-            color: #007BFF !important;
+            color: #005f77 !important;
         }
 
         main.container {
