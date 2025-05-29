@@ -8,24 +8,45 @@
         @csrf
         @method('PUT')
 
-        <div class="mb-3">
-            <label for="name" class="form-label fw-semibold">Nama Imunisasi</label>
-            <input type="text" name="name" class="form-control" value="{{ old('name', $immunization->name) }}" required>
+        <x-input-with-label
+            label="Nama Imunisasi"
+            name="name"
+            type="text"
+            :value="old('name', $immunization->name)"
+            required
+            class="@error('name') border-red-500 @enderror"
+        />
+        @error('name')
+            <div class="text-red-500 text-sm mb-3">{{ $message }}</div>
+        @enderror
+
+        <x-input-with-label
+            label="Usia"
+            name="age"
+            type="text"
+            :value="old('age', $immunization->age)"
+            class="@error('age') border-red-500 @enderror"
+        />
+        @error('age')
+            <div class="text-red-500 text-sm mb-3">{{ $message }}</div>
+        @enderror
+
+        <div class="mb-4">
+            <label for="description" class="form-label fw-semibold">Deskripsi</label>
+            <textarea
+                name="description"
+                id="description"
+                rows="4"
+                class="form-control @error('description') is-invalid @enderror"
+            >{{ old('description', $immunization->description) }}</textarea>
+            @error('description')
+                <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+            @enderror
         </div>
 
-        <div class="mb-3">
-            <label for="age" class="form-label fw-semibold">Usia</label>
-            <input type="text" name="age" class="form-control" value="{{ old('age', $immunization->age) }}">
-        </div>
-
-        <div class="mb-3">
-        <label for="description" class="form-label fw-semibold">Deskripsi</label>
-        <textarea name="description" class="form-control" rows="4">{{ old('description', $immunization->description) }}</textarea>
-        </div>
-
-        <div class="mt-3 d-flex gap-2">
-            <button type="submit" class="btn btn-primary">Simpan</button>
-            <a href="{{ route('admin.immunizations.index') }}" class="btn btn-secondary">Batal</a>
+        <div class="mt-3 d-flex gap-2 flex-wrap">
+            <x-button type="submit" class="bg-blue-600 hover:bg-blue-700">Simpan</x-button>
+            <x-button href="{{ route('admin.immunizations.index') }}" type="button" class="bg-gray-600 hover:bg-gray-700">Batal</x-button>
         </div>
     </form>
 </div>

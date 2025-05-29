@@ -1,47 +1,64 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h2>Riwayat Imunisasi Anda</h2>
+<div class="container py-4">
+    <h2 class="mb-4">Riwayat Imunisasi Anda</h2>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
+    {{-- Tombol tambah --}}
+    <div class="mb-4">
+        <x-button href="{{ route('orangtua.immunization_records.create') }}">
+            + Tambah Riwayat Imunisasi
+        </x-button>
+    </div>
 
-    <a href="{{ route('orangtua.immunization_records.create') }}" class="btn btn-primary mb-3">+ Tambah Riwayat Imunisasi</a>
-
+    {{-- Tabel riwayat --}}
     @if($records->isEmpty())
-        <p>Anda belum memiliki riwayat imunisasi.</p>
+        <div class="alert alert-info">
+            Anda belum memiliki riwayat imunisasi.
+        </div>
     @else
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Nama Imunisasi</th>
-                    <th>Tanggal Diberikan</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($records as $index => $record)
-                    <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ $record->immunization->name }}</td>
-                        <td>{{ \Carbon\Carbon::parse($record->immunized_at)->format('d-m-Y') }}</td>
-                        <td>{{ $record->status }}</td>
-                        <td>
-                            <a href="{{ route('orangtua.immunization_records.edit', $record->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                            <form action="{{ route('orangtua.immunization_records.destroy', $record->id) }}" method="POST" style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" onclick="return confirm('Yakin ingin menghapus?')" class="btn btn-danger btn-sm">Hapus</button>
-                            </form>
-                        </td>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle">
+                <thead class="table-light">
+                    <tr class="text-center">
+                        <th style="width: 5%;">No</th>
+                        <th>Nama Imunisasi</th>
+                        <th style="width: 20%;">Tanggal Diberikan</th>
+                        <th style="width: 15%;">Status</th>
+                        <th style="width: 15%;">Aksi</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach($records as $index => $record)
+                        <tr>
+                            <td class="text-center">{{ $index + 1 }}</td>
+                            <td>{{ $record->immunization->name }}</td>
+                            <td>{{ \Carbon\Carbon::parse($record->immunized_at)->format('d-m-Y') }}</td>
+                            <td>{{ $record->status }}</td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-2">
+                                    {{-- Edit --}}
+                                    <a href="{{ route('orangtua.immunization_records.edit', $record->id) }}">
+                                        <x-button-icon icon="edit" title="Edit" />
+                                    </a>
+
+                                    {{-- Hapus --}}
+                                    <form
+                                        action="{{ route('orangtua.immunization_records.destroy', $record->id) }}"
+                                        method="POST"
+                                        onsubmit="return confirm('Yakin ingin menghapus?')"
+                                    >
+                                        @csrf
+                                        @method('DELETE')
+                                        <x-button-icon icon="trash" title="Hapus" type="submit" />
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     @endif
 </div>
 @endsection
