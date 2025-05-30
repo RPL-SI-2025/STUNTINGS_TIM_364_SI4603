@@ -9,12 +9,29 @@ use Illuminate\Support\Facades\Auth;
 
 class TahapanPerkembanganDataController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Mengambil pencapaian tahapan perkembangan yang dimiliki user yang sedang login
-        $tahapanPerkembanganData = TahapanPerkembanganData::where('user_id', Auth::id())->get();
+        $statusOptions = collect([
+            (object)['id' => 'tercapai', 'name' => 'Tercapai'],
+            (object)['id' => 'belum_tercapai', 'name' => 'Belum Tercapai'],
+        ]);
 
-        return view('orangtua.tahapan_perkembangan.index', compact('tahapanPerkembanganData'));
+        $selectedStatus = $request->input('kategori', []); // gunakan nama param yg sama
+
+        $query = TahapanPerkembanganData::query();
+
+        if (!empty($selectedStatus)) {
+            $query->whereIn('status', $selectedStatus);
+        }
+
+        $data = $query->where('user_id', Auth::id())->orderBy('tanggal_pencapaian')->paginate(10);
+
+        return view('orangtua.tahapan_perkembangan.index', [
+            'data' => $data,
+            'kategoris' => $statusOptions,
+            'kategoriIds' => $selectedStatus,
+            'action' => route('orangtua.tahapan_perkembangan.index'),
+        ]);
     }
 
     public function create()
