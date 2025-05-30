@@ -14,7 +14,7 @@
                     type="text"
                     placeholder="Cari berdasarkan nama imunisasi..."
                     :value="request('name')"
-                    class="h-10" {{-- agar input tingginya 40px --}}
+                    class="h-10"
                 />
             </div>
 
@@ -57,11 +57,24 @@
                         <td class="border border-gray-300 px-3 py-2 text-left">{{ $immunization->description }}</td>
                         <td class="border border-gray-300 px-3 py-2">
                             <div class="flex justify-center gap-2">
-                                <x-button-icon icon="pencil" title="Edit" class="bg-yellow-400 hover:bg-yellow-500 text-white" />
-                                <form action="{{ route('admin.immunizations.destroy', $immunization->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                {{-- Tombol Edit --}}
+                                <a href="{{ route('admin.immunizations.edit', $immunization->id) }}"
+                                   class="bg-yellow-400 hover:bg-yellow-500 text-white px-2 py-1 rounded"
+                                   title="Edit">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+
+                                {{-- Tombol Hapus --}}
+                                <form action="{{ route('admin.immunizations.destroy', $immunization->id) }}"
+                                      method="POST"
+                                      onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                     @csrf
                                     @method('DELETE')
-                                    <x-button-icon icon="trash" title="Hapus" class="bg-red-600 hover:bg-red-700 text-white" />
+                                    <button type="submit"
+                                            class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded"
+                                            title="Hapus">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
                                 </form>
                             </div>
                         </td>

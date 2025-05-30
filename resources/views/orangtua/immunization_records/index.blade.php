@@ -37,20 +37,27 @@
                             <td>{{ $record->status }}</td>
                             <td>
                                 <div class="d-flex justify-content-center gap-2">
-                                    {{-- Edit --}}
-                                    <a href="{{ route('orangtua.immunization_records.edit', $record->id) }}">
-                                        <x-button-icon icon="edit" title="Edit" />
+                                    {{-- Tombol Edit --}}
+                                    <a href="{{ route('orangtua.immunization_records.edit', $record->id) }}"
+                                       class="btn btn-sm btn-warning"
+                                       title="Edit">
+                                        <i class="fas fa-pencil-alt"></i>
                                     </a>
 
-                                    {{-- Hapus --}}
+                                    {{-- Tombol Hapus --}}
                                     <form
                                         action="{{ route('orangtua.immunization_records.destroy', $record->id) }}"
                                         method="POST"
                                         onsubmit="return confirm('Yakin ingin menghapus?')"
+                                        style="display: inline-block;"
                                     >
                                         @csrf
                                         @method('DELETE')
-                                        <x-button-icon icon="trash" title="Hapus" type="submit" />
+                                        <button type="submit"
+                                                class="btn btn-sm btn-danger"
+                                                title="Hapus">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
                                     </form>
                                 </div>
                             </td>

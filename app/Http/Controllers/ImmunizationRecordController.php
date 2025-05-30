@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Immunization;
 use App\Models\ImmunizationRecord;
 use Illuminate\Http\Request;
