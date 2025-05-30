@@ -18,6 +18,7 @@ class Bmi extends Model
         'berat',
         'bmi',
         'status',
+        'gender',
     ];
 
     /**

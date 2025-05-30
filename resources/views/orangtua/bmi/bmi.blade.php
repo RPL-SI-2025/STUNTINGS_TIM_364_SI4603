@@ -1,348 +1,505 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalkulator BMI</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kalkulator BMI & Estimasi Kalori</title>
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-100 justify-center items-center min-h-screen p-12">
-    <!-- Top Bar -->
-    {{--
-    <div class="bg-gray-800 text-white p-4 flex justify-between items-center">
-        <div class="flex items-center">
-            <!-- Logout Button Form -->
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="mr-2 text-lg">&lt;-</button>
-            </form>
+<body class="bg-gray-100 min-h-screen p-8 flex flex-col items-center">
+
+    {{-- Top Bar --}}
+    <div class="bg-gray-800 text-white w-full max-w-5xl p-4 flex justify-between items-center rounded-md shadow-md mb-6">
+        <div class="flex items-center space-x-4">
+            <a href="{{ route('orangtua.dashboard') }}" class="text-lg hover:underline">&lt;-</a>
             <h1 class="text-xl font-bold">Kalkulator BMI</h1>
         </div>
-      --}}
-
-    <div class="bg-gray-800 text-white p-4 flex justify-between items-center">
-    <div class="flex items-center">
-        <!-- Tombol kembali ke dashboard orangtua -->
-        <a href="{{ route('orangtua.dashboard') }}" class="mr-2 text-lg hover:underline">&lt;-</a>
-        <h1 class="text-xl font-bold">Kalkulator BMI</h1>
+        <div>
+            @auth
+                <span>Welcome, {{ Auth::user()->nama_anak }}</span>
+            @else
+                <span>Silakan login</span>
+            @endauth
+        </div>
     </div>
 
-        <!-- Display User's Name if logged in -->
-        @if(Auth::check())
-            <div class="text-lg">
-                Welcome, {{ Auth::user()->nama_anak }}
-            </div>
-        @else
-            <div class="text-lg">
-                Please log in
-            </div>
-        @endif
-    </div>
-    
-    <!-- Alert Messages -->
+    {{-- Alert --}}
     @if ($errors->any())
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4" role="alert">
-            <strong class="font-bold">Error!</strong>
-            <ul class="list-disc ml-5">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 max-w-5xl w-full">
+        <strong class="font-bold">Error!</strong>
+        <ul class="list-disc ml-5">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
     @endif
-    
+
     @if (session('error'))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4" role="alert">
-            <strong class="font-bold">Error!</strong>
-            <span class="block sm:inline">{{ session('error') }}</span>
-        </div>
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 max-w-5xl w-full">
+        <strong class="font-bold">Error!</strong>
+        <span>{{ session('error') }}</span>
+    </div>
     @endif
-    
+
     @if (session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mt-4" role="alert">
-            <strong class="font-bold">Success!</strong>
-            <span class="block sm:inline">{{ session('success') }}</span>
-        </div>
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4 max-w-5xl w-full">
+        <strong class="font-bold">Success!</strong>
+        <span>{{ session('success') }}</span>
+    </div>
     @endif
 
-    <!-- BMI Form Section -->
-    <div class="bg-gray-200 p-4 rounded-lg mt-4">
-        <div id="bmiFormAlert" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <strong class="font-bold">Error!</strong>
-            <span id="bmiFormAlertMessage" class="block sm:inline">Harap lengkapi semua data terlebih dahulu.</span>
-        </div>
-        
-        <form id="bmiForm" action="{{ route('hitung-bmi') }}" method="POST">
-            @csrf
-            <select name="gender" id="gender" class="w-full p-2 mb-2 border border-gray-300 rounded" required>
-                <option value="" disabled {{ session('gender') == null ? 'selected' : '' }}>Pilih Gender</option>
-                <option value="pria" {{ session('gender') == 'pria' ? 'selected' : '' }}>Pria</option>
-                <option value="wanita" {{ session('gender') == 'wanita' ? 'selected' : '' }}>Wanita</option>
-            </select>
-            
-            <input type="number" id="tinggi" name="tinggi" placeholder="Tinggi Badan (cm)" value="{{ session('tinggi') }}" class="w-full p-2 mb-2 border border-gray-300 rounded" required>
-            <input type="number" id="berat" name="berat" placeholder="Berat Badan (kg)" value="{{ session('berat') }}" class="w-full p-2 mb-2 border border-gray-300 rounded" required>
-            <input type="text" value="{{ session('bmi') }}" placeholder="BMI Score" class="w-full p-2 mb-2 border border-gray-400 bg-gray-300 rounded" readonly>
-            <input type="text" value="{{ session('status') }}" placeholder="Status" class="w-full p-2 mb-2 border border-gray-400 bg-gray-300 rounded" readonly>
+    {{-- BMI Form --}}
+    <div class="bg-white max-w-5xl w-full p-6 rounded-lg shadow mb-10">
+        <h2 class="text-2xl font-semibold mb-4">Hitung BMI</h2>
 
-            <button type="button" class="w-full bg-blue-500 text-white py-2 rounded mb-2" onclick="validateAndSubmit('{{ route('hitung-bmi') }}')">Hitung</button>
-            <button type="button" class="w-full bg-pink-500 text-white py-2 rounded mb-2" onclick="validateAndSubmit('{{ route('simpan-bmi') }}')">Simpan</button>
-            <button type="reset" class="w-full bg-red-500 text-white py-2 rounded" onclick="setFormAction(event, '{{ route('reset-bmi') }}')">Reset</button>
+        <div id="bmiFormAlert" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <strong class="font-bold">Error!</strong>
+            <span id="bmiFormAlertMessage">Harap lengkapi semua data terlebih dahulu.</span>
+        </div>
+
+        <form id="bmiForm" method="POST" action="{{ route('hitung-bmi') }}">
+            @csrf
+
+            <x-dropdown-with-label
+                name="gender"
+                id="gender"
+                label="Gender"
+                :options="['pria' => 'Pria', 'wanita' => 'Wanita']"
+                :selected="session('gender')"
+                required
+            />
+
+            <x-input-with-label
+                type="number"
+                name="tinggi"
+                id="tinggi"
+                label="Tinggi Badan (cm)"
+                :value="session('tinggi')"
+                required
+            />
+
+            <x-input-with-label
+                type="number"
+                name="berat"
+                id="berat"
+                label="Berat Badan (kg)"
+                :value="session('berat')"
+                required
+            />
+
+            <x-input-with-label
+                type="text"
+                name="bmi"
+                label="BMI Score"
+                :value="session('bmi')"
+                readonly
+                class="bg-gray-200"
+            />
+            <x-input-with-label
+                type="text"
+                name="status"
+                label="Status"
+                :value="session('status')"
+                readonly
+                class="bg-gray-200"
+            />
+
+            <div class="flex flex-col space-y-3">
+                <button type="button" class="bg-[#005f77] hover:bg-[#014f66] text-white font-semibold text-sm rounded-md px-4 py-2 transition" onclick="validateAndSubmit('{{ route('hitung-bmi') }}')">Hitung</button>
+                <button type="button" class="bg-[#005f77] hover:bg-[#014f66] text-white font-semibold text-sm rounded-md px-4 py-2 transition" onclick="validateAndSubmit('{{ route('simpan-bmi') }}', true)">Simpan</button>
+                <button type="reset" class="bg-red-600 hover:bg-red-700 text-white font-semibold text-sm rounded-md px-4 py-2 transition" onclick="setFormAction(event, '{{ route('reset-bmi') }}')">Reset</button>
+            </div>
         </form>
     </div>
 
-   <!-- BMI Data Table -->
-    <div class="mt-10">
-        <table class="w-full border-collapse border border-gray-300 text-left text-sm">
-            <thead>
-                <tr class="bg-gray-200">
-                    <th class="border border-gray-300 px-2 py-1">No</th>
-                    <th class="border border-gray-300 px-2 py-1">Tanggal</th>
-                    <th class="border border-gray-300 px-2 py-1">Tinggi</th>
-                    <th class="border border-gray-300 px-2 py-1">Berat Badan</th>
-                    <th class="border border-gray-300 px-2 py-1">BMI Score</th>
-                    <th class="border border-gray-300 px-2 py-1">Status</th>
-                    <th class="border border-gray-300 px-2 py-1"> </th>
+    {{-- Tabel BMI --}}
+    <div class="max-w-5xl w-full overflow-x-auto mb-10">
+        <h2 class="text-2xl font-semibold mb-4">Riwayat Data BMI</h2>
+        <table class="min-w-full bg-white rounded-lg shadow overflow-hidden border border-gray-300">
+            <thead class="bg-gray-200 text-gray-700">
+                <tr>
+                    <th class="text-left py-2 px-3 border border-gray-300">No</th>
+                    <th class="text-left py-2 px-3 border border-gray-300">Tanggal</th>
+                    <th class="text-left py-2 px-3 border border-gray-300">Gender</th>
+                    <th class="text-left py-2 px-3 border border-gray-300">Tinggi (cm)</th>
+                    <th class="text-left py-2 px-3 border border-gray-300">Berat (kg)</th>
+                    <th class="text-left py-2 px-3 border border-gray-300">BMI</th>
+                    <th class="text-left py-2 px-3 border border-gray-300">Status</th>
+                    <th class="text-center py-2 px-3 border border-gray-300">Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                @isset($bmiRecords)
-                    @if($bmiRecords->isNotEmpty())
-                        @foreach($bmiRecords as $index => $data)
-                            <tr class="border border-gray-300">
-                                <td class="border border-gray-300 px-2 py-1">{{ $index + 1 }}</td>
-                                <td class="border border-gray-300 px-2 py-1">{{ $data->tanggal }}</td>
-                                <td class="border border-gray-300 px-2 py-1">{{ $data->tinggi }} cm</td>
-                                <td class="border border-gray-300 px-2 py-1">{{ $data->berat }} kg</td>
-                                <td class="border border-gray-300 px-2 py-1">{{ $data->bmi }}</td>
-                                <td class="border border-gray-300 px-2 py-1">{{ $data->status }}</td>
-                                <td class="border border-gray-300 px-2 py-1">
-                                    <form action="{{ route('hapus-bmi-row', $data->id) }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded">Hapus</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    @else
-                        <tr>
-                            <td colspan="7" class="text-center border border-gray-300 px-2 py-1">Belum ada data</td>
-                        </tr>
-                    @endif
+                @if(isset($bmiRecords) && $bmiRecords->isNotEmpty())
+                    @foreach($bmiRecords as $index => $data)
+                    <tr class="border-t border-gray-300">
+                        <td class="py-2 px-3 border border-gray-300">{{ $index + 1 }}</td>
+                        <td class="py-2 px-3 border border-gray-300">{{ $data->tanggal }}</td>
+                        <td class="py-2 px-3 border border-gray-300">{{ ucfirst($data->gender ?? 'tidak diketahui') }}</td>
+                        <td class="py-2 px-3 border border-gray-300">{{ $data->tinggi }}</td>
+                        <td class="py-2 px-3 border border-gray-300">{{ $data->berat }}</td>
+                        <td class="py-2 px-3 border border-gray-300">{{ $data->bmi }}</td>
+                        <td class="py-2 px-3 border border-gray-300">{{ $data->status }}</td>
+                        <td class="py-2 px-3 border border-gray-300 text-center">
+                            <form action="{{ route('hapus-bmi-row', $data->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                @csrf
+                                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-semibold text-sm rounded-md px-4 py-2 transition">Hapus</button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
                 @else
                     <tr>
-                        <td colspan="7" class="text-center border border-gray-300 px-2 py-1">Data tidak tersedia</td>
+                        <td colspan="7" class="text-center py-4 text-gray-500">Belum ada data BMI.</td>
                     </tr>
-                @endisset
+                @endif
             </tbody>
         </table>
-        
-    </div>
-    <div class="mt-10 bg-white p-4 rounded-lg shadow-md">
-    <h2 class="text-lg font-semibold mb-2">Grafik Perkembangan BMI</h2>
-    <canvas id="bmiChart" height="100"></canvas>
     </div>
 
-    <script>
-        function setFormAction(event, actionUrl) {
-            event.preventDefault(); // Prevent default form submission
-            document.getElementById('bmiForm').action = actionUrl;
-            document.getElementById('bmiForm').submit(); // Submit the form with new action
-        }
-        
-        function validateAndSubmit(actionUrl) {
-            const gender = document.getElementById('gender').value;
-            const tinggi = document.getElementById('tinggi').value;
-            const berat = document.getElementById('berat').value;
-            const alertDiv = document.getElementById('bmiFormAlert');
-            const alertMessage = document.getElementById('bmiFormAlertMessage');
-            
-            // Reset alert
-            alertDiv.classList.add('hidden');
-            
-            // Validate form fields
-            if (!gender || gender === '') {
-                alertMessage.textContent = 'Harap pilih gender terlebih dahulu.';
-                alertDiv.classList.remove('hidden');
-                return false;
-            }
-            
-            if (!tinggi || tinggi <= 0) {
-                alertMessage.textContent = 'Harap masukkan tinggi badan yang valid (lebih dari 0).';
-                alertDiv.classList.remove('hidden');
-                return false;
-            }
-            
-            if (!berat || berat <= 0) {
-                alertMessage.textContent = 'Harap masukkan berat badan yang valid (lebih dari 0).';
-                alertDiv.classList.remove('hidden');
-                return false;
-            }
-            
-            // If validation passes, submit the form
-            const form = document.getElementById('bmiForm');
-            form.action = actionUrl;
-            form.submit();
-        }
-        
-        function validateKaloriForm() {
-            const form = document.getElementById('kaloriForm');
-            const gender = form.querySelector('#gender').value;
-            const berat = form.querySelector('#berat').value;
-            const tinggi = form.querySelector('#tinggi').value;
-            const usia = form.querySelector('#usia').value;
-            const activityLevel = form.querySelector('#activity_level').value;
-            const alertDiv = document.getElementById('kaloriFormAlert');
-            const alertMessage = document.getElementById('kaloriFormAlertMessage');
-            
-            // Reset alert
-            alertDiv.classList.add('hidden');
-            
-            // Validate all fields
-            if (!gender) {
-                alertMessage.textContent = 'Harap pilih jenis kelamin.';
-                alertDiv.classList.remove('hidden');
-                return false;
-            }
-            
-            if (!berat || berat <= 0) {
-                alertMessage.textContent = 'Harap masukkan berat badan yang valid (lebih dari 0).';
-                alertDiv.classList.remove('hidden');
-                return false;
-            }
-            
-            if (!tinggi || tinggi <= 0) {
-                alertMessage.textContent = 'Harap masukkan tinggi badan yang valid (lebih dari 0).';
-                alertDiv.classList.remove('hidden');
-                return false;
-            }
-            
-            if (!usia || usia <= 0) {
-                alertMessage.textContent = 'Harap masukkan usia yang valid (lebih dari 0).';
-                alertDiv.classList.remove('hidden');
-                return false;
-            }
-            
-            if (!activityLevel) {
-                alertMessage.textContent = 'Harap pilih level aktivitas.';
-                alertDiv.classList.remove('hidden');
-                return false;
-            }
-            
-            // If validation passes, submit the form
-            form.submit();
-        }
-    </script>
+    {{-- Grafik BMI --}}
+    <div class="max-w-5xl w-full bg-white p-6 rounded-lg shadow mb-10">
+        <h2 class="text-2xl font-semibold mb-4">Grafik Perkembangan BMI</h2>
+        <canvas id="bmiChart" height="100"></canvas>
+    </div>
 
-    <script>
-    const labels = @json($bmiRecords->pluck('tanggal'));
-    const data = @json($bmiRecords->pluck('bmi'));
-
-    const ctx = document.getElementById('bmiChart').getContext('2d');
-    const bmiChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'BMI Score',
-                data: data,
-                borderColor: 'rgb(75, 192, 192)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                fill: true,
-                tension: 0.3,
-                pointRadius: 5,
-                pointHoverRadius: 7
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: false
-                }
-             }
-          }
-        });
-    </script>
-
-@if ($lastBmi)
-<div class="max-w-5xl w-full mx-auto bg-gray-200 p-8 rounded-lg shadow-lg mt-8">
-    <h2 class="text-2xl font-semibold mb-6 text-gray-800">🔥 Estimasi Kebutuhan Kalori Harian</h2>
     
-    <div id="kaloriFormAlert" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-        <strong class="font-bold">Error!</strong>
-        <span id="kaloriFormAlertMessage" class="block sm:inline">Harap lengkapi semua data terlebih dahulu.</span>
-    </div>
+    {{-- Estimasi Kalori --}}
+    @if ($lastBmi)
+    <div class="max-w-5xl w-full bg-white p-6 rounded-lg shadow mb-10">
+        <h2 class="text-2xl font-semibold mb-4">Estimasi Kebutuhan Kalori Harian</h2>
 
-    <form id="kaloriForm" method="POST" action="{{ route('hitungKalori') }}" class="space-y-6">
-        @csrf
 
-        {{-- Gender (otomatis dari data terakhir, tapi masih bisa diubah) --}}
-        <div>
-            <label for="gender" class="block mb-2 font-medium text-gray-700">Jenis Kelamin</label>
-            <select id="gender" name="gender" required
-            class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option value="pria" {{ old('gender', $lastBmi->gender) == 'pria' ? 'selected' : '' }}>Pria</option>
-            <option value="wanita" {{ old('gender', $lastBmi->gender) == 'wanita' ? 'selected' : '' }}>Wanita</option>
-            </select>
+        <div id="kaloriFormAlert" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span id="kaloriFormAlertMessage" class="block sm:inline"></span>
         </div>
+        
+        <form id="kaloriForm" action="{{ route('hitungKalori') }}" method="POST" class="space-y-4">
+            @csrf
+            
 
-        {{-- Berat Badan --}}
-        <div>
-            <label for="berat" class="block mb-2 font-medium text-gray-700">Berat Badan (kg)</label>
-            <input id="berat" name="berat" type="number" step="0.1" required
-            value="{{ old('berat', $lastBmi->berat) }}"
-            class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-        </div>
+            <x-dropdown-with-label
+            name="gender"
+            id="gender_kalori"
+            label="Gender"
+            :options="['pria' => 'Pria', 'wanita' => 'Wanita']"
+            :selected="old('gender', $lastBmi->gender)"
+            required
+            />
+            
+            <x-input-with-label
+                type="number"
+                name="berat"
+                id="berat_kalori"
+                label="Berat Badan (kg)"
+                :value="old('berat', $lastBmi->berat)"
+            />
+            
+            <x-input-with-label
+                type="number"
+                name="tinggi"
+                id="tinggi_kalori"
+                label="Tinggi Badan (cm)"
+                :value="old('tinggi', $lastBmi->tinggi)"
+            />
+            
 
-        {{-- Tinggi Badan --}}
-        <div>
-            <label for="tinggi" class="block mb-2 font-medium text-gray-700">Tinggi Badan (cm)</label>
-            <input id="tinggi" name="tinggi" type="number" step="0.1" required
-            value="{{ old('tinggi', $lastBmi->tinggi) }}"
-            class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-        </div>
+            <x-input-with-label
+                type="number"
+                name="usia"
+                id="usia_kalori"
+                label="Usia (tahun)"
+                :value="old('usia')"
+                min="1"
+                required
+            />
 
-        {{-- Usia --}}
-        <div>
-            <label for="usia" class="block mb-2 font-medium text-gray-700">Usia (tahun)</label>
-            <input id="usia" name="usia" type="number" required
-            value="{{ old('usia', $lastBmi->usia) }}"
-            class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-        </div>
+            <x-dropdown-with-label
+                name="activity_level"
+                id="activity_level"
+                label="Level Aktivitas"
+                :options="[
+                    'sedentary' => 'Tidak aktif (sedikit atau tidak ada olahraga)',
+                    'lightly_active' => 'Sedikit aktif (olahraga ringan 1–3 hari/minggu)',
+                    'moderately_active' => 'Cukup aktif (olahraga sedang 3–5 hari/minggu)',
+                    'very_active' => 'Sangat aktif (olahraga keras 6–7 hari/minggu)',
+                    'extra_active' => 'Ekstra aktif (kerja fisik berat atau 2x olahraga/hari)'
+                ]"
+                :selected="old('activity_level', $lastBmi->activity_level ?? '')"
+                required
+            />
 
-        {{-- Level Aktivitas --}}
-        <div>
-            <label for="activity_level" class="block mb-2 font-medium text-gray-700">Level Aktivitas</label>
-            <select id="activity_level" name="activity_level" class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                <option value="sedentary" {{ old('activity_level', $lastBmi->activity_level) == 'sedentary' ? 'selected' : '' }}>Tidak aktif (sedikit atau tidak ada olahraga)</option>
-                <option value="lightly_active" {{ old('activity_level', $lastBmi->activity_level) == 'lightly_active' ? 'selected' : '' }}>Sedikit aktif (olahraga ringan 1–3 hari/minggu)</option>
-                <option value="moderately_active" {{ old('activity_level', $lastBmi->activity_level) == 'moderately_active' ? 'selected' : '' }}>Cukup aktif (olahraga sedang 3–5 hari/minggu)</option>
-                <option value="very_active" {{ old('activity_level', $lastBmi->activity_level) == 'very_active' ? 'selected' : '' }}>Sangat aktif (olahraga keras 6–7 hari/minggu)</option>
-                <option value="extra_active" {{ old('activity_level', $lastBmi->activity_level) == 'extra_active' ? 'selected' : '' }}>Ekstra aktif (kerja fisik berat atau 2x olahraga/hari)</option>
-            </select>
-        </div>
+            <div>
+                <button type="button" id="hitungKaloriBtn" class="bg-[#005f77] hover:bg-[#014f66] text-white font-semibold text-sm rounded-md px-4 py-2 transition w-full">Hitung Estimasi Kalori</button>
+            </div>
+        </form>
 
-        {{-- Tombol Hitung --}}
-        <button type="button" onclick="validateKaloriForm()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-md transition">Hitung Estimasi Kalori</button>
-    </form>
-      @endif
-    {{-- Hasil Kalori Ditampilkan --}}
-    @if(session('kalori'))
+        {{-- Hasil Kalori Ditampilkan --}}
+        @if(session('kalori') && session('show_kalori_results'))
         <div class="mt-6 bg-green-100 border border-green-400 text-green-800 p-4 rounded shadow">
             <h2 class="text-lg font-bold">🔥 Estimasi Kebutuhan Kalori Harian</h2>
             <ul class="list-disc ml-5 mt-2">
                 <li>Berat: {{ session('berat') }} kg</li>
                 <li>Tinggi: {{ session('tinggi') }} cm</li>
                 <li>Usia: {{ session('usia') }} tahun</li>
-                <li>Gender: {{ session('gender') }}</li>
+                <li>Gender: {{ ucfirst(session('gender')) }}</li>
                 <li>Aktivitas: {{ session('activity_level') }}</li>
             </ul>
             <p class="mt-3 font-semibold">Total Kalori per Hari: {{ session('kalori') }} kcal</p>
         </div>
+        @endif
+    </div>
     @endif
 
+    {{-- Script --}}
+    <script>
+        // When the page loads, set up the event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up the gender sync between BMI form and kalori form
+            const genderBmiSelect = document.getElementById('gender');
+            const genderKaloriSelect = document.getElementById('gender_kalori');
+            const tinggiKaloriInput = document.getElementById('tinggi_kalori');
+            const beratKaloriInput = document.getElementById('berat_kalori');
+            
+            // Check if we have saved values from a previous save operation
+            const savedGender = localStorage.getItem('bmi_gender');
+            const savedTinggi = localStorage.getItem('bmi_tinggi');
+            const savedBerat = localStorage.getItem('bmi_berat');
+            
+            // If we have saved values and the kalori form exists, update it
+            if (savedGender && genderKaloriSelect) {
+                // Update the gender dropdown in the kalori form
+                if (genderKaloriSelect.tagName === 'SELECT') {
+                    // For select elements, we need to find the option with the matching value
+                    for (let i = 0; i < genderKaloriSelect.options.length; i++) {
+                        if (genderKaloriSelect.options[i].value === savedGender) {
+                            genderKaloriSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                } else {
+                    // For other input types
+                    genderKaloriSelect.value = savedGender;
+                }
+                
+                // Update height and weight if available
+                if (savedTinggi && tinggiKaloriInput) {
+                    tinggiKaloriInput.value = savedTinggi;
+                }
+                
+                if (savedBerat && beratKaloriInput) {
+                    beratKaloriInput.value = savedBerat;
+                }
+                
+                // Clear the localStorage after we've used the values
+                localStorage.removeItem('bmi_gender');
+                localStorage.removeItem('bmi_tinggi');
+                localStorage.removeItem('bmi_berat');
+            }
+            
+            // Set up the change event listener for future changes
+            if (genderBmiSelect && genderKaloriInput && genderDisplayInput) {
+                genderBmiSelect.addEventListener('change', function() {
+                    // Update the hidden gender input in kalori form
+                    genderKaloriInput.value = genderBmiSelect.value;
+                    // Update the display input with capitalized gender
+                    genderDisplayInput.value = genderBmiSelect.value.charAt(0).toUpperCase() + genderBmiSelect.value.slice(1);
+                });
+            }
+        });
+        
+        function validateAndSubmit(actionUrl, isSave = false) {
+            const form = document.getElementById('bmiForm');
+            // Get values from the component-based form elements
+            const genderSelect = document.getElementById('gender');
+            const tinggiInput = document.getElementById('tinggi');
+            const beratInput = document.getElementById('berat');
+            
+            const gender = genderSelect ? genderSelect.value : '';
+            const tinggi = tinggiInput ? tinggiInput.value : '';
+            const berat = beratInput ? beratInput.value : '';
+            const alertDiv = document.getElementById('bmiFormAlert');
+
+            if (!gender || !tinggi || !berat) {
+                alertDiv.classList.remove('hidden');
+                alertDiv.querySelector('#bmiFormAlertMessage').textContent = 'Harap lengkapi semua data terlebih dahulu.';
+                return false;
+            }
+
+            alertDiv.classList.add('hidden');
+            form.action = actionUrl;
+            
+            // If this is a save operation, store the values in localStorage before submitting
+            // This ensures we can retrieve them after page reload
+            if (isSave) {
+                localStorage.setItem('bmi_gender', gender);
+                localStorage.setItem('bmi_tinggi', tinggi);
+                localStorage.setItem('bmi_berat', berat);
+            }
+            
+            form.submit();
+            
+            // Update the kalori form with the latest values
+            updateKaloriForm(gender, tinggi, berat);
+        }
+        
+        // Helper function to update the kalori form with BMI values
+        function updateKaloriForm(gender, tinggi, berat) {
+            const genderKaloriSelect = document.getElementById('gender_kalori');
+            const tinggiKaloriInput = document.getElementById('tinggi_kalori');
+            const beratKaloriInput = document.getElementById('berat_kalori');
+            
+            // Update gender in kalori form
+            if (genderKaloriSelect) {
+                if (genderKaloriSelect.tagName === 'SELECT') {
+                    // For select elements, we need to find the option with the matching value
+                    for (let i = 0; i < genderKaloriSelect.options.length; i++) {
+                        if (genderKaloriSelect.options[i].value === gender) {
+                            genderKaloriSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                } else {
+                    // For other input types
+                    genderKaloriSelect.value = gender;
+                }
+            }
+            
+            if (tinggiKaloriInput && tinggi) {
+                tinggiKaloriInput.value = tinggi;
+            }
+            
+            if (beratKaloriInput && berat) {
+                beratKaloriInput.value = berat;
+            }
+        }
+
+        function setFormAction(event, resetUrl) {
+            event.preventDefault();
+            const form = document.getElementById('bmiForm');
+            form.action = resetUrl;
+            form.submit();
+        }
+
+        const bmiData = @json($bmiRecords->map(fn($d) => ['tanggal' => $d->tanggal, 'bmi' => $d->bmi]));
+
+        const labels = bmiData.map(item => item.tanggal);
+        const data = bmiData.map(item => parseFloat(item.bmi));
+
+        const ctx = document.getElementById('bmiChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'BMI',
+                    data: data,
+                    borderColor: 'rgba(37, 99, 235, 1)',
+                    backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        suggestedMin: 10,
+                        suggestedMax: 40
+                    }
+                }
+            }
+        });
+    
+        // Add event listener to the button when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listener to the kalori form submit button
+            const hitungKaloriBtn = document.getElementById('hitungKaloriBtn');
+            if (hitungKaloriBtn) {
+                hitungKaloriBtn.addEventListener('click', validateKaloriForm);
+            }
+        });
+        
+        // Validation function for the kalori form
+        function validateKaloriForm() {
+            // Get the form and alert elements
+            const form = document.getElementById('kaloriForm');
+            const alertDiv = document.getElementById('kaloriFormAlert');
+            
+            // Initialize error message
+            let errorMessage = '';
+            
+            // Validate weight (berat)
+            const beratInputs = form.querySelectorAll('input[name="berat"], #berat, #berat_kalori');
+            let beratValue = '';
+            for (let i = 0; i < beratInputs.length; i++) {
+                if (beratInputs[i] && beratInputs[i].value && beratInputs[i].value.trim() !== '') {
+                    beratValue = beratInputs[i].value.trim();
+                    break;
+                }
+            }
+            if (!beratValue) {
+                errorMessage = 'Berat badan harus diisi.';
+            }
+            
+            // Validate height (tinggi)
+            const tinggiInputs = form.querySelectorAll('input[name="tinggi"], #tinggi, #tinggi_kalori');
+            let tinggiValue = '';
+            for (let i = 0; i < tinggiInputs.length; i++) {
+                if (tinggiInputs[i] && tinggiInputs[i].value && tinggiInputs[i].value.trim() !== '') {
+                    tinggiValue = tinggiInputs[i].value.trim();
+                    break;
+                }
+            }
+            if (!tinggiValue && !errorMessage) {
+                errorMessage = 'Tinggi badan harus diisi.';
+            }
+            
+            // Validate age (usia)
+            const usiaInputs = form.querySelectorAll('input[name="usia"], #usia, #usia_kalori');
+            let usiaValue = '';
+            for (let i = 0; i < usiaInputs.length; i++) {
+                if (usiaInputs[i] && usiaInputs[i].value && usiaInputs[i].value.trim() !== '') {
+                    usiaValue = usiaInputs[i].value.trim();
+                    break;
+                }
+            }
+            if (!usiaValue && !errorMessage) {
+                errorMessage = 'Usia harus diisi.';
+            }
+            
+            // Validate activity level
+            const activityLevelSelect = form.querySelector('select[name="activity_level"], #activity_level');
+            let activityLevelValue = '';
+            if (activityLevelSelect && activityLevelSelect.value) {
+                activityLevelValue = activityLevelSelect.value;
+            }
+            if (!activityLevelValue && !errorMessage) {
+                errorMessage = 'Level aktivitas harus dipilih.';
+            }
+            
+            // If any validation error, show it
+            if (errorMessage) {
+                alertDiv.classList.remove('hidden');
+                alertDiv.querySelector('#kaloriFormAlertMessage').textContent = errorMessage;
+                
+                // Scroll to the alert
+                alertDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                return false;
+            }
+            
+            // If all validations pass, submit the form
+            alertDiv.classList.add('hidden');
+            form.submit();
+        }
+    </script>
 
 </body>
 </html>

@@ -158,13 +158,11 @@ class BMICalculatorController extends Controller
             'berat' => $berat,
             'bmi' => number_format($bmi, 2),
             'status' => $status,
-            'usia' => $usia,
-            'activity_level' => $activity_level,
             'gender' => $gender,
-            'kalori' => $kalori,
+            // Removed usia, activity_level, and kalori fields as they don't exist in the database
         ]);
 
-        return redirect()->route('bmi');
+        return redirect()->route('bmi')->with('success', 'Data berhasil disimpan!');
     }
 
 
@@ -204,7 +202,7 @@ class BMICalculatorController extends Controller
 }
 
     public function hitungKalori(Request $request)
-    {
+{
     $validated = $request->validate([
         'gender' => 'required|in:pria,wanita',
         'berat' => 'required|numeric|min:10',
@@ -244,10 +242,11 @@ class BMICalculatorController extends Controller
         'usia' => $usia,
         'gender' => $gender,
         'activity_level' => $activity_level,
+        'show_kalori_results' => true, // Flag to indicate results should be displayed
     ]);
 
+    // Use withInput() to ensure all form values are retained after submission
     return redirect()->back()->withInput();
 }
-
 
 }
