@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +18,8 @@ use App\Http\Controllers\{
     UserArtikelController
 };
 use App\Models\NutritionRecommendation;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -29,8 +32,9 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Dashboard
 Route::middleware(['auth'])->group(function () {
+
+    // Dashboard Admin
     Route::get('/admin/dashboard', function () {
         if (Auth::user()->role !== 'admin') {
             abort(403);
@@ -39,19 +43,53 @@ Route::middleware(['auth'])->group(function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
 
+    // Dashboard Orangtua
     Route::get('/orangtua/dashboard', function () {
         if (Auth::user()->role !== 'orangtua') {
             abort(403);
         }
 
-        return view('orangtua.dashboard');
+        $today = Carbon::now();
+        $hari = strtolower($today->isoFormat('dddd'));
+        $tanggal = $today->dayOfYear;
+
+        $menuByCategory = [
+            'pagi' => DB::table('nutrition_recommendations')->where('category', 'pagi')->get(),
+            'siang' => DB::table('nutrition_recommendations')->where('category', 'siang')->get(),
+            'malam' => DB::table('nutrition_recommendations')->where('category', 'malam')->get(),
+            'snack' => DB::table('nutrition_recommendations')->where('category', 'snack')->get(),
+        ];
+
+        $getMenuByDate = function ($menuList) use ($hari, $tanggal) {
+            if ($menuList->isEmpty()) return null;
+            $index = crc32($hari . $tanggal) % $menuList->count();
+            return $menuList[$index];
+        };
+
+        $menus = collect();
+        foreach ($menuByCategory as $kategori => $list) {
+            $menus[$kategori] = $getMenuByDate($list);
+        }
+
+        $artikels = DB::table('artikels')->latest()->get(); // Ambil semua artikel untuk carousel
+
+        return view('orangtua.dashboard', compact('menus', 'artikels'));
     })->name('orangtua.dashboard');
+
+
 });
 
-// Deteksi
-Route::get('/user/deteksi-stunting', [DetectionController::class, 'create'])->name('orangtua.detections.create');
-Route::post('/orangtua/deteksi-stunting', [DetectionController::class, 'store'])->name('orangtua.detections.store');
-Route::get('/admin/detections', [DetectionController::class, 'index'])->name('admin.detections.index');
+// Deteksi Stunting (Orangtua)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/orangtua/deteksi-stunting', [DetectionController::class, 'create'])->name('orangtua.detections.create');
+    Route::post('/orangtua/deteksi-stunting', [DetectionController::class, 'store'])->name('orangtua.detections.store');
+    Route::delete('/orangtua/deteksi-stunting/{id}', [DetectionController::class, 'destroy'])->name('orangtua.detections.destroy');
+});
+
+// Deteksi Stunting (Admin)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/deteksi-stunting', [DetectionController::class, 'index'])->name('admin.detections.index');
+});
 
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // 🔹 Kategori Artikel
@@ -80,102 +118,28 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
     // 🔹 Tahapan Perkembangan
     Route::resource('tahapan_perkembangan', TahapanPerkembanganController::class);
-    
-    // (Opsional) Jika butuh route tambahan untuk form `create`
     Route::get('perkembangan/create', [TahapanPerkembanganController::class, 'create'])->name('perkembangan.create');
+
+    // 🔹 Nutrition
     Route::resource('nutrition', NutritionController::class)->except(['show']);
 });
 
-// Artikel User
+// Artikel untuk Orangtua
 Route::prefix('orangtua/artikel')->name('orangtua.artikel.')->middleware('auth')->group(function () {
     Route::get('/', [UserArtikelController::class, 'index'])->name('index');
     Route::get('/{id}', [UserArtikelController::class, 'show'])->name('show');
 });
 
-// Orangtua
+// Orangtua Immunization & Tahapan Perkembangan
 Route::prefix('orangtua')->name('orangtua.')->middleware('auth')->group(function () {
     Route::resource('immunization_records', ImmunizationRecordController::class);
     Route::resource('tahapan_perkembangan', TahapanPerkembanganDataController::class);
 });
 
-//bmi
-Route::middleware(['auth'])->group(function () {
-    Route::get('/bmi', function() {
-        // Check if user has orangtua role
-        if (Auth::user()->role !== 'orangtua') {
-            abort(403, 'Unauthorized. Only orangtua can access this page.');
-        }
-        
-        // If role is correct, proceed to the controller
-        return app()->make(BMICalculatorController::class)->showBmiData();
-    })->name('bmi');
-        
-    // POST routes for BMI functionality
-    Route::post('/hitung-bmi', function(Request $request) {
-        if (Auth::user()->role !== 'orangtua') {
-            abort(403, 'Unauthorized. Only orangtua can access this feature.');
-        }
-        return app()->make(BMICalculatorController::class)->calculate($request);
-    })->name('hitung-bmi');
-        
-    Route::post('/simpan-bmi', function(Request $request) {
-        if (Auth::user()->role !== 'orangtua') {
-            abort(403, 'Unauthorized. Only orangtua can access this feature.');
-        }
-        return app()->make(BMICalculatorController::class)->save($request);
-    })->name('simpan-bmi');
-        
-    Route::post('/reset-bmi', function() {
-        if (Auth::user()->role !== 'orangtua') {
-            abort(403, 'Unauthorized. Only orangtua can access this feature.');
-        }
-        return app()->make(BMICalculatorController::class)->reset();
-    })->name('reset-bmi');
-        
-    Route::post('/hapus-bmi/{index}', function($index) {
-        if (Auth::user()->role !== 'orangtua') {
-            abort(403, 'Unauthorized. Only orangtua can access this feature.');
-        }
-        return app()->make(BMICalculatorController::class)->deleteRow($index);
-    })->name('hapus-bmi-row');
-        
-    Route::post('/kalori-harian', function(Request $request) {
-        if (Auth::user()->role !== 'orangtua') {
-            abort(403, 'Unauthorized. Only orangtua can access this feature.');
-        }
-        return app()->make(BMICalculatorController::class)->hitungKalori($request);
-    })->name('kalori-harian');
-        
-    Route::post('/calculate-calories', function(Request $request) {
-        if (Auth::user()->role !== 'orangtua') {
-            abort(403, 'Unauthorized. Only orangtua can access this feature.');
-        }
-        return app()->make(BMICalculatorController::class)->calculateCalories($request);
-    })->name('calculate.calories');
-        
-    Route::post('/hitung-kalori', function(Request $request) {
-        if (Auth::user()->role !== 'orangtua') {
-            abort(403, 'Unauthorized. Only orangtua can access this feature.');
-        }
-        return app()->make(BMICalculatorController::class)->hitungKalori($request);
-    })->name('hitungKalori');
-});
 
-// Orangtua (Nutrition Recommendation View)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/nutritionUs', function (Request $request) {
-        if (auth()->user()->role !== 'orangtua') abort(403, 'Unauthorized');
-        $kategori = $request->query('kategori');
-        $menus = $kategori
-            ? NutritionRecommendation::where('category', $kategori)->get()
-            : NutritionRecommendation::all();
-        return view('nutritionUs.index', compact('menus', 'kategori'));
-    })->name('nutritionUs.index');
-
-    Route::get('/nutritionUs/{id}', function (string $id) {
         if (auth()->user()->role !== 'orangtua') abort(403, 'Unauthorized');
         $menu = NutritionRecommendation::findOrFail($id);
-        return view('nutritionUs.show', compact('menu'));
-    })->name('nutritionUs.show');
+        return view('orangtua.nutritionus.show', compact('menu'));
+    })->name('orangtua.nutritionUs.show');
 });
 

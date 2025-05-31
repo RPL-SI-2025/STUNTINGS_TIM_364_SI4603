@@ -7,18 +7,29 @@ use Illuminate\Http\Request;
 
 class DetectionController extends Controller
 {
-    // jadi ini buat si admin doang
-    public function index()
+    // Untuk admin: list semua data dengan fitur pencarian
+    public function index(Request $request)
     {
         if (auth()->user()->role !== 'admin') {
             abort(403, 'Unauthorized');
         }
 
-        $semua = Detection::latest()->get();
+        $query = Detection::with('user')->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('nama_anak', 'like', '%' . $search . '%');
+            });
+        }
+
+        $semua = $query->get();
+
         return view('admin.detections.index', compact('semua'));
     }
 
-    // yang ini buat ortu doang
+
+    // Untuk orangtua: tampilkan form deteksi + riwayat
     public function create()
     {
         if (auth()->user()->role !== 'orangtua') {
@@ -29,7 +40,7 @@ class DetectionController extends Controller
         return view('orangtua.detections.deteksi', compact('semua'));
     }
 
-    // ini cuma ortu doang yang bisa nyimpen data
+    // Orangtua bisa simpan data deteksi
     public function store(Request $request)
     {
         if (auth()->user()->role !== 'orangtua') {
@@ -73,7 +84,7 @@ class DetectionController extends Controller
             default => 'Tinggi'
         };
 
-        $hasil = Detection::create([
+        Detection::create([
             'user_id' => auth()->id(),
             'nama' => auth()->user()->nama_anak,
             'umur' => $umur,
@@ -84,12 +95,21 @@ class DetectionController extends Controller
             'status' => $status,
         ]);
 
-        $semua = Detection::where('user_id', auth()->id())->latest()->get();
+        // Redirect ke halaman form agar lebih baik UX nya
+        return redirect()->route('orangtua.detections.create')->with('success', 'Deteksi berhasil disimpan!');
+    }
 
-        return view('orangtua.detections.deteksi', [
-            'success' => 'Deteksi berhasil disimpan!',
-            'hasil' => $hasil,
-            'semua' => $semua,
-        ]);
+    // Hapus data deteksi, hanya milik user yang bersangkutan
+    public function destroy($id)
+    {
+        $detection = Detection::findOrFail($id);
+
+        if (auth()->user()->id !== $detection->user_id) {
+            abort(403);
+        }
+
+        $detection->delete();
+
+        return redirect()->back()->with('success', 'Data berhasil dihapus.');
     }
 }

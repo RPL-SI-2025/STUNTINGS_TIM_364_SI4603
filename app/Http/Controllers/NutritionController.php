@@ -102,13 +102,26 @@ class NutritionController extends Controller
         return redirect()->route('admin.nutrition.index')->with('success', 'Menu berhasil dihapus');
     }
 
-    public function user()
+    public function user(Request $request)
     {
         if (auth()->user()->role !== 'orangtua') {
             abort(403, 'Unauthorized');
         }
 
-        $menus = NutritionRecommendation::all();
-        return view('orangtua.nutrition.index', compact('menus'));
+        $kategoriList = ['pagi', 'siang', 'malam', 'snack'];
+        $kategoris = collect($kategoriList)->map(function($kategori) {
+            return (object)[
+                'id' => $kategori,
+                'name' => ucfirst($kategori)
+            ];
+        });
+
+        $kategoriIds = $request->input('kategori', []);
+
+        $menus = NutritionRecommendation::when($kategoriIds, function ($query) use ($kategoriIds) {
+            return $query->whereIn('category', $kategoriIds);
+        })->get();
+
+        return view('orangtua.nutritionUs.index', compact('menus', 'kategoris', 'kategoriIds'));
     }
 }
