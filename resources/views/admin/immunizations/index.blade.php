@@ -1,91 +1,98 @@
 @extends('layouts.app')
 
+@section('title', 'Data Vaksin Imunisasi')
+
 @section('content')
-<div class="container py-4">
-    <h4 class="fw-bold mb-4 text-primary">Data Vaksin Imunisasi</h4>
+<style>
+    .badge {
+        display: inline-block;
+        background: #e0f2fe;
+        color: #0284c7;
+        border-radius: 0.5rem;
+        padding: 0.2rem 0.7rem;
+        font-size: 0.85rem;
+        margin-right: 0.3rem;
+        margin-bottom: 0.2rem;
+    }
+</style>
 
-    {{-- Form Search --}}
-    <form action="{{ route('admin.immunizations.index') }}" method="GET" class="mb-4">
-        <div class="flex flex-wrap items-center gap-4 mb-4">
-            <div class="flex-grow min-w-[250px]">
-                <x-input-with-label
-                    label=""
-                    name="name"
-                    type="text"
-                    placeholder="Cari berdasarkan nama imunisasi..."
-                    :value="request('name')"
-                    class="h-10"
-                />
+<div class="container px-0">
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            {{-- HEADER --}}
+            <div class="d-flex justify-content-between align-items-center mb-4" style="max-width: 1280px; margin: 0 auto;">
+                <h1 class="main-title mb-0" style="color: #005f77; font-size: 1.75rem;">Data Vaksin Imunisasi</h1>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{{ route('admin.immunizations.create') }}"
+                        class="btn text-white"
+                        style="background-color: #005f77;">+ Tambah Imunisasi
+                    </a>
+                    <button class="btn btn-outline-secondary" title="Cari Imunisasi"
+                            onclick="document.getElementById('searchModal').classList.remove('hidden')">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
             </div>
 
-            <div class="flex gap-2 items-center">
-                <x-button type="submit" class="bg-[#005f77] hover:bg-[#014f66] text-white h-10 flex items-center gap-2">
-                    <i class="fas fa-search"></i> Cari
-                </x-button>
-
-                <x-button href="{{ route('admin.immunizations.index') }}" type="button" class="bg-gray-300 hover:bg-gray-400 text-black h-10 flex items-center gap-2">
-                    <i class="fas fa-times-circle"></i> Reset
-                </x-button>
+            {{-- MODAL SEARCH --}}
+            <div id="searchModal" class="modal-overlay hidden fixed inset-0 bg-black bg-opacity-10 z-50 flex items-center justify-center">
+                <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-md">
+                    <form method="GET" action="{{ route('admin.immunizations.index') }}">
+                        <div class="mb-4 font-semibold text-sky-900">Cari Nama Imunisasi</div>
+                        <input type="text" name="name" class="form-control mb-4" placeholder="Masukkan nama imunisasi..." value="{{ request('name') }}">
+                        <div class="flex justify-end gap-2">
+                            <button type="submit" class="px-4 py-2 rounded text-white" style="background-color: #005f77;">
+                                <i class="fa-solid fa-magnifying-glass me-1"></i> Cari
+                            </button>
+                            <a href="{{ route('admin.immunizations.index') }}" class="px-4 py-2 rounded text-white" style="background-color: #005f77;">Reset</a>
+                            <button type="button" onclick="document.getElementById('searchModal').classList.add('hidden')" class="px-4 py-2 rounded text-white" style="background-color: #005f77;">Tutup</button>
+                        </div>
+                    </form>
+                </div>
             </div>
 
-            <div class="ml-auto">
-                <x-button href="{{ route('admin.immunizations.create') }}" type="button" class="bg-green-600 hover:bg-green-700 text-white h-10 flex items-center gap-2">
-                    <i class="fas fa-plus-circle"></i> Tambah Imunisasi
-                </x-button>
+            {{-- TABEL --}}
+            <div class="table-responsive mt-3">
+                <table class="table table-bordered table-hover bg-white">
+                    <thead class="table-secondary text-center">
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Imunisasi</th>
+                            <th>Usia</th>
+                            <th>Deskripsi</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($immunizations as $index => $immunization)
+                            <tr class="text-center">
+                                <td>{{ $index + 1 }}</td>
+                                <td class="text-start">{{ $immunization->name }}</td>
+                                <td>{{ $immunization->age }}</td>
+                                <td class="text-start">{{ $immunization->description }}</td>
+                                <td class="d-flex gap-2 justify-content-center">
+                                    <a href="{{ route('admin.immunizations.edit', $immunization->id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                    <form action="{{ route('admin.immunizations.destroy', $immunization->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Hapus</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">Belum ada data imunisasi.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
+
         </div>
-    </form>
-
-    {{-- Table --}}
-    <div class="overflow-x-auto rounded shadow-sm">
-        <table class="w-full border-collapse border border-gray-200 text-sm">
-            <thead class="bg-gray-100 text-center">
-                <tr>
-                    <th class="border border-gray-300 px-3 py-2 w-12">No</th>
-                    <th class="border border-gray-300 px-3 py-2 w-1/4">Nama Imunisasi</th>
-                    <th class="border border-gray-300 px-3 py-2 w-24">Usia</th>
-                    <th class="border border-gray-300 px-3 py-2 w-2/5">Deskripsi</th>
-                    <th class="border border-gray-300 px-3 py-2 w-1/5">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($immunizations as $immunization)
-                    <tr class="text-center odd:bg-white even:bg-gray-50">
-                        <td class="border border-gray-300 px-3 py-2">{{ $loop->iteration }}</td>
-                        <td class="border border-gray-300 px-3 py-2 text-left">{{ $immunization->name }}</td>
-                        <td class="border border-gray-300 px-3 py-2">{{ $immunization->age }}</td>
-                        <td class="border border-gray-300 px-3 py-2 text-left">{{ $immunization->description }}</td>
-                        <td class="border border-gray-300 px-3 py-2">
-                            <div class="flex justify-center gap-2">
-                                {{-- Tombol Edit --}}
-                                <a href="{{ route('admin.immunizations.edit', $immunization->id) }}"
-                                   class="bg-yellow-400 hover:bg-yellow-500 text-white px-2 py-1 rounded"
-                                   title="Edit">
-                                    <i class="fas fa-pencil-alt"></i>
-                                </a>
-
-                                {{-- Tombol Hapus --}}
-                                <form action="{{ route('admin.immunizations.destroy', $immunization->id) }}"
-                                      method="POST"
-                                      onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                            class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded"
-                                            title="Hapus">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="text-center text-gray-500 py-4">Belum ada data imunisasi.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
     </div>
 </div>
+
+{{-- Font Awesome --}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 @endsection
