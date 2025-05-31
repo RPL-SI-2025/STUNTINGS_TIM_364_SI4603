@@ -77,6 +77,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('orangtua.dashboard');
 
 
+
 });
 
 // Deteksi Stunting (Orangtua)
@@ -137,9 +138,25 @@ Route::prefix('orangtua')->name('orangtua.')->middleware('auth')->group(function
 });
 
 
+// Nutrition untuk Orangtua
+Route::middleware(['auth'])->group(function () {
+    Route::get('/orangtua/nutritionUs', [NutritionController::class, 'user'])
+        ->name('orangtua.nutritionUs.index');
+
+    Route::get('/orangtua/nutritionUs/{id}', function (string $id) {
         if (auth()->user()->role !== 'orangtua') abort(403, 'Unauthorized');
         $menu = NutritionRecommendation::findOrFail($id);
         return view('orangtua.nutritionus.show', compact('menu'));
     })->name('orangtua.nutritionUs.show');
 });
 
+// BMI
+Route::get('/bmi', [BMICalculatorController::class, 'showBmiData'])->name('bmi');
+Route::post('/hitung-bmi', [BMICalculatorController::class, 'calculate'])->name('hitung-bmi');
+Route::post('/simpan-bmi', [BMICalculatorController::class, 'save'])->name('simpan-bmi');
+Route::post('/reset-bmi', [BMICalculatorController::class, 'reset'])->name('reset-bmi');
+Route::post('/hapus-bmi/{index}', [BMICalculatorController::class, 'deleteRow'])->name('hapus-bmi-row');
+
+Route::get('/profile', function () {
+    return view('profile'); // universal view
+})->middleware('auth')->name('profile');
