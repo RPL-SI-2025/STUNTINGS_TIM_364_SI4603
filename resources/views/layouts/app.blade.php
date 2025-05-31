@@ -149,7 +149,7 @@
                         <a class="nav-link" href="{{ $role === 'admin' ? route('admin.immunizations.index') : route('orangtua.immunization_records.index') }}">Imunisasi</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ $role === 'admin' ? route('admin.tahapan_perkembangan.index') : route('orangtua.tahapan_perkembangan.index') }}">Monitoring</a>
+                        <a class="nav-link" href="{{ $role === 'admin' ? route('admin.tahapan_perkembangan.index') : route('orangtua.tahapan_perkembangan.index') }}">Perkembangan</a>
                     </li>
                 </ul>
 
