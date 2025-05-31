@@ -4,9 +4,11 @@
 
 <div class="container">
     <h2 class="mb-4">Daftar Menu Nutrisi</h2>
-    <a href="{{ route('admin.nutrition.create') }}" class="btn btn-primary mb-4">
-        <i class="bi bi-plus-circle me-1"></i> Tambah Menu
-    </a>
+
+    {{-- Tombol Tambah Menu --}}
+    <x-button href="{{ route('admin.nutrition.create') }}" class="mb-4 inline-flex items-center gap-1">
+        <i class="bi bi-plus-circle"></i> Tambah Menu
+    </x-button>
 
     @foreach ($menus as $menu)
     <div class="card mb-4 shadow-sm border-0">
@@ -25,15 +27,16 @@
                     
                     {{-- Tombol Aksi --}}
                     <div class="d-flex gap-2">
-                        <a href="{{ route('admin.nutrition.edit', $menu->id) }}" class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-pencil-square me-1"></i>Edit
-                        </a>
+                        <x-button href="{{ route('admin.nutrition.edit', $menu->id) }}" type="button" class="btn-sm inline-flex items-center gap-1">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </x-button>
+
                         <form action="{{ route('admin.nutrition.destroy', $menu->id) }}" method="POST" onsubmit="return confirm('Yakin ingin hapus?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-outline-danger btn-sm">
-                                <i class="bi bi-trash3 me-1"></i>Hapus
-                            </button>
+                            <x-button type="submit" class="btn-sm inline-flex items-center gap-1 bg-red-600 hover:bg-red-700">
+                                <i class="bi bi-trash3"></i> Hapus
+                            </x-button>
                         </form>
                     </div>
 
