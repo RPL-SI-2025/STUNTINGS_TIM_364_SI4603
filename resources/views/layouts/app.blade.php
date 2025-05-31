@@ -1,4 +1,3 @@
-
 <!-- resources/views/layouts/app.blade.php -->
 
 <!DOCTYPE html>
@@ -14,8 +13,10 @@
     {{-- Google Fonts --}}
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
+    {{-- Font Awesome --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
+    {{-- Tailwind --}}
     <script>
     tailwind.config = {
         safelist: ['bg-[#005f77]', 'hover:bg-[#014f66]']
@@ -23,11 +24,10 @@
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
 
-
     {{-- Custom Styles --}}
     <style>
         body {
-            padding-top: 60px;
+            padding-top: 72px;
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(to right, #fdfbfb, #ebedee);
         }
@@ -35,14 +35,46 @@
         .navbar {
             background-color: #ffffff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding-top: 0.3rem;
-            padding-bottom: 0.3rem;
-            height: 56px;
+            padding-top: 0.7rem;
+            padding-bottom: 0.7rem;
+            height: 72px;
         }
 
         .navbar-brand {
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 1.5rem; /* atau 24px */
             color: #005f77 !important;
+        }
+
+        .navbar-nav .nav-link {
+            color: #005f77 !important;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 999px; /* biar super bulat */
+            transition: all 0.25s ease-in-out;
+        }
+
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link:focus,
+        .navbar-nav .nav-link.active {
+            color: #ffffff !important;
+            background-color: #005f77 !important;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* biar ada depth dikit */
+            transform: scale(1.05); /* zoom dikit */
+        }
+
+        .navbar-nav {
+            flex-wrap: wrap;
+        }
+
+        .navbar-nav .nav-link.dropdown-toggle:hover {
+            color: #ffffff !important;
+            background-color: rgba(0, 95, 119, 0.1);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
         }
 
         main.container {
@@ -57,6 +89,15 @@
             animation: fadeIn 0.6s ease-in-out;
         }
 
+        .dropdown-menu-end {
+            right: 0;
+            left: auto;
+        }
+
+        .dropdown-toggle::after {
+            margin-left: 8px;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -64,36 +105,57 @@
     </style>
 </head>
 <body>
-    <nav class="navbar fixed-top navbar-expand-lg px-4"> {{-- gunakan padding --}}
-        <div class="d-flex w-100 justify-content-between align-items-center">
-            <a class="navbar-brand" href="#">Dashboard</a>
+    <nav class="navbar fixed-top navbar-expand-lg px-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ Auth::user()->role === 'admin' ? route('admin.dashboard') : route('orangtua.dashboard') }}">
+                Stuntings
+            </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+            {{-- NAVBAR MENU (Always Show) --}}
+            <div class="d-flex w-100 justify-content-end">
+                <ul class="navbar-nav d-flex flex-row flex-wrap gap-3 align-items-center mb-0">
                     @auth
-                        @if(Auth::user()->role === 'admin')
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('admin.dashboard') }}">Admin Dashboard</a>
-                            </li>
-                        @elseif(Auth::user()->role === 'orangtua')
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('orangtua.dashboard') }}">Orangtua Dashboard</a>
-                            </li>
-                        @endif
+                        @php $role = Auth::user()->role; @endphp
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ $role === 'admin' ? route('admin.dashboard') : route('orangtua.dashboard') }}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ $role === 'admin' ? route('admin.detections.index') : route('orangtua.detections.create') }}">Deteksi</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('bmi') }}">BMI</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ $role === 'admin' ? route('admin.nutrition.index') : route('orangtua.nutritionUs.index') }}">Nutrisi</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ $role === 'admin' ? route('admin.artikel.index') : route('orangtua.artikel.index') }}">Artikel</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                Hi, {{ Auth::user()->nama_anak ?? 'Pengguna' }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="{{ route('profile') }}">Profil</a></li>
+                                <li>
+                                    <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item">Logout</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
                     @endauth
                 </ul>
             </div>
         </div>
     </nav>
 
-    {{-- Main Content --}}
+    {{-- MAIN CONTENT --}}
     <main class="container mt-4">
         <div class="content-card">
-            {{-- Flash Messages --}}
             @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
@@ -107,6 +169,5 @@
 
     {{-- Bootstrap JS --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>
