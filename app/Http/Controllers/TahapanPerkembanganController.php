@@ -9,20 +9,27 @@ class TahapanPerkembanganController extends Controller
 {
     public function index()
     {
-        // Mengambil semua data tahapan perkembangan
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $tahapanPerkembangan = TahapanPerkembangan::all();
         return view('admin.tahapan_perkembangan.index', compact('tahapanPerkembangan'));
     }
 
     public function create()
     {
-        // Menampilkan form untuk menambahkan tahapan perkembangan baru
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
         return view('admin.tahapan_perkembangan.create');
     }
 
     public function store(Request $request)
     {
-        // Validasi data inputan
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
         $request->validate([
             'nama_tahapan' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
@@ -30,7 +37,7 @@ class TahapanPerkembanganController extends Controller
             'umur_maksimal_bulan' => 'nullable|integer',
         ]);
 
-        // Menyimpan tahapan perkembangan baru
+        
         TahapanPerkembangan::create([
             'nama_tahapan' => $request->nama_tahapan,
             'deskripsi' => $request->deskripsi,
@@ -43,13 +50,17 @@ class TahapanPerkembanganController extends Controller
 
     public function edit(TahapanPerkembangan $tahapanPerkembangan)
     {
-        // Menampilkan form untuk mengedit data tahapan perkembangan
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
         return view('admin.tahapan_perkembangan.edit', compact('tahapanPerkembangan'));
     }
 
     public function update(Request $request, TahapanPerkembangan $tahapanPerkembangan)
     {
-        // Validasi data inputan
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
         $request->validate([
             'nama_tahapan' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
@@ -57,7 +68,6 @@ class TahapanPerkembanganController extends Controller
             'umur_maksimal_bulan' => 'nullable|integer',
         ]);
 
-        // Mengupdate data tahapan perkembangan yang dipilih
         $tahapanPerkembangan->update([
             'nama_tahapan' => $request->nama_tahapan,
             'deskripsi' => $request->deskripsi,
@@ -70,7 +80,9 @@ class TahapanPerkembanganController extends Controller
 
     public function destroy(TahapanPerkembangan $tahapanPerkembangan)
     {
-        // Menghapus data tahapan perkembangan
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
         $tahapanPerkembangan->delete();
         return back()->with('success', 'Tahapan Perkembangan berhasil dihapus');
     }

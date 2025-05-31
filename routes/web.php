@@ -76,6 +76,7 @@ Route::middleware(['auth'])->group(function () {
         return view('orangtua.dashboard', compact('menus', 'artikels'));
     })->name('orangtua.dashboard');
 
+
 });
 
 // Deteksi Stunting (Orangtua)

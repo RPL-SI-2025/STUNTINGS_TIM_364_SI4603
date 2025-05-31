@@ -11,40 +11,46 @@
     <form action="{{ route('orangtua.immunization_records.store') }}" method="POST">
         @csrf
 
-        <div class="mb-3">
-            <label for="immunization_id" class="form-label">Nama Imunisasi</label>
-            <select name="immunization_id" id="immunization_id" class="form-control @error('immunization_id') is-invalid @enderror" required>
-                <option value="">Pilih Imunisasi</option>
-                @foreach($immunizations as $immunization)
-                    <option value="{{ $immunization->id }}">{{ $immunization->name }}</option>
-                @endforeach
-            </select>
-            @error('immunization_id')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
+        <x-dropdown-with-label
+            label="Nama Imunisasi"
+            name="immunization_id"
+            :options="$immunizations->pluck('name', 'id')->toArray()"
+            :selected="old('immunization_id')"
+            required
+            class="@error('immunization_id') border-red-500 @enderror"
+        />
+        @error('immunization_id')
+            <div class="text-red-500 text-sm mb-3">{{ $message }}</div>
+        @enderror
 
-        <div class="mb-3">
-            <label for="immunized_at" class="form-label">Tanggal Imunisasi</label>
-            <input type="date" name="immunized_at" id="immunized_at" class="form-control @error('immunized_at') is-invalid @enderror" required>
-            @error('immunized_at')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
+        <x-input-with-label
+            label="Tanggal Imunisasi"
+            name="immunized_at"
+            type="date"
+            value="{{ old('immunized_at') }}"
+            required
+            class="@error('immunized_at') border-red-500 @enderror"
+        />
+        @error('immunized_at')
+            <div class="text-red-500 text-sm mb-3">{{ $message }}</div>
+        @enderror
 
-        <div class="mb-3">
-            <label for="status" class="form-label">Status</label>
-            <select name="status" id="status" class="form-control @error('status') is-invalid @enderror" required>
-                <option value="Sudah">Sudah</option>
-                <option value="Belum">Belum</option>
-            </select>
-            @error('status')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
+        <x-dropdown-with-label
+            label="Status"
+            name="status"
+            :options="['Sudah' => 'Sudah', 'Belum' => 'Belum']"
+            :selected="old('status')"
+            required
+            class="@error('status') border-red-500 @enderror"
+        />
+        @error('status')
+            <div class="text-red-500 text-sm mb-3">{{ $message }}</div>
+        @enderror
 
-        <button type="submit" class="btn btn-success">Simpan</button>
-        <a href="{{ route('orangtua.immunization_records.index') }}" class="btn btn-secondary">Kembali</a>
+        <x-button type="submit" class="mt-4">Simpan</x-button>
+        <x-button href="{{ route('orangtua.immunization_records.index') }}" type="button" class="mt-4 ml-2 bg-gray-600 hover:bg-gray-700">
+            Kembali
+        </x-button>
     </form>
 </div>
 @endsection
