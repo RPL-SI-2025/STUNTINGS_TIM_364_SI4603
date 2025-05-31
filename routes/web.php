@@ -77,6 +77,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('orangtua.dashboard');
 
 
+
 });
 
 // Deteksi Stunting (Orangtua)
@@ -136,6 +137,7 @@ Route::prefix('orangtua')->name('orangtua.')->middleware('auth')->group(function
     Route::resource('tahapan_perkembangan', TahapanPerkembanganDataController::class);
 });
 
+
 // Nutrition untuk Orangtua
 Route::middleware(['auth'])->group(function () {
     Route::get('/orangtua/nutritionUs', [NutritionController::class, 'user'])
@@ -155,7 +157,6 @@ Route::post('/simpan-bmi', [BMICalculatorController::class, 'save'])->name('simp
 Route::post('/reset-bmi', [BMICalculatorController::class, 'reset'])->name('reset-bmi');
 Route::post('/hapus-bmi/{index}', [BMICalculatorController::class, 'deleteRow'])->name('hapus-bmi-row');
 
-Route::get('/orangtua/profile', function () {
-    if (Auth::user()->role !== 'orangtua') abort(403);
-    return view('orangtua.profile');
+Route::get('/profile', function () {
+    return view('profile'); // universal view
 })->middleware('auth')->name('profile');

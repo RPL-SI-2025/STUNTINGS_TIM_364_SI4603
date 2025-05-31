@@ -21,6 +21,11 @@ return new class extends Migration
             $table->float('bmi', 5, 2);      // hasil perhitungan BMI
             $table->string('status');        // status BMI (misalnya: kurus, normal, obesitas)
 
+            // Kolom tambahan
+            $table->integer('usia')->nullable();
+            $table->string('activity_level')->nullable();
+            $table->string('gender')->nullable();
+
             $table->timestamps();
         });
     }
