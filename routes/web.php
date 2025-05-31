@@ -136,26 +136,10 @@ Route::prefix('orangtua')->name('orangtua.')->middleware('auth')->group(function
     Route::resource('tahapan_perkembangan', TahapanPerkembanganDataController::class);
 });
 
-// Nutrition untuk Orangtua
-Route::middleware(['auth'])->group(function () {
-    Route::get('/orangtua/nutritionUs', [NutritionController::class, 'user'])
-        ->name('orangtua.nutritionUs.index');
 
-    Route::get('/orangtua/nutritionUs/{id}', function (string $id) {
         if (auth()->user()->role !== 'orangtua') abort(403, 'Unauthorized');
         $menu = NutritionRecommendation::findOrFail($id);
         return view('orangtua.nutritionus.show', compact('menu'));
     })->name('orangtua.nutritionUs.show');
 });
 
-// BMI
-Route::get('/bmi', [BMICalculatorController::class, 'showBmiData'])->name('bmi');
-Route::post('/hitung-bmi', [BMICalculatorController::class, 'calculate'])->name('hitung-bmi');
-Route::post('/simpan-bmi', [BMICalculatorController::class, 'save'])->name('simpan-bmi');
-Route::post('/reset-bmi', [BMICalculatorController::class, 'reset'])->name('reset-bmi');
-Route::post('/hapus-bmi/{index}', [BMICalculatorController::class, 'deleteRow'])->name('hapus-bmi-row');
-
-Route::get('/orangtua/profile', function () {
-    if (Auth::user()->role !== 'orangtua') abort(403);
-    return view('orangtua.profile');
-})->middleware('auth')->name('profile');
