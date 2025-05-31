@@ -9,16 +9,41 @@ use Illuminate\Support\Facades\Auth;
 
 class TahapanPerkembanganDataController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Mengambil pencapaian tahapan perkembangan yang dimiliki user yang sedang login
-        $tahapanPerkembanganData = TahapanPerkembanganData::where('user_id', Auth::id())->get();
+        if (auth()->user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized');
+        }
 
-        return view('orangtua.tahapan_perkembangan.index', compact('tahapanPerkembanganData'));
+        $statusOptions = collect([
+            (object)['id' => 'tercapai', 'name' => 'Tercapai'],
+            (object)['id' => 'belum_tercapai', 'name' => 'Belum Tercapai'],
+        ]);
+
+        $selectedStatus = $request->input('kategori', []); // gunakan nama param yg sama
+
+        $query = TahapanPerkembanganData::query();
+
+        if (!empty($selectedStatus)) {
+            $query->whereIn('status', $selectedStatus);
+        }
+
+        $data = $query->where('user_id', Auth::id())->orderBy('tanggal_pencapaian')->paginate(10);
+
+        return view('orangtua.tahapan_perkembangan.index', [
+            'data' => $data,
+            'kategoris' => $statusOptions,
+            'kategoriIds' => $selectedStatus,
+            'action' => route('orangtua.tahapan_perkembangan.index'),
+        ]);
     }
 
     public function create()
     {
+        if (auth()->user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized');
+        }
+
         // Menampilkan daftar tahapan perkembangan untuk dipilih oleh orang tua
         $tahapanPerkembangan = TahapanPerkembangan::all();
         return view('orangtua.tahapan_perkembangan.create', compact('tahapanPerkembangan'));
@@ -26,6 +51,10 @@ class TahapanPerkembanganDataController extends Controller
 
     public function edit($id)
     {
+        if (auth()->user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized');
+        }
+
         // Mengambil data tahapan perkembangan berdasarkan ID
         $tahapanPerkembanganData = TahapanPerkembanganData::findOrFail($id);
         $tahapanPerkembangan = TahapanPerkembangan::all();
@@ -36,6 +65,10 @@ class TahapanPerkembanganDataController extends Controller
 
     public function store(Request $request)
     {
+        if (auth()->user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized');
+        }
+
         // Validasi data yang diterima
         $request->validate([
             'tahapan_perkembangan_id' => 'required|exists:tahapan_perkembangan,id',
@@ -58,6 +91,10 @@ class TahapanPerkembanganDataController extends Controller
 
     public function update(Request $request, $id)
     {
+        if (auth()->user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized');
+        }
+
         // Validasi data yang diterima
         $request->validate([
             'tahapan_perkembangan_id' => 'required|exists:tahapan_perkembangan,id',
@@ -81,6 +118,10 @@ class TahapanPerkembanganDataController extends Controller
     }
     public function destroy($id)
     {
+        if (auth()->user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized');
+        }
+        
         $tahapanPerkembanganData = TahapanPerkembanganData::findOrFail($id);
         $tahapanPerkembanganData->delete();
 
