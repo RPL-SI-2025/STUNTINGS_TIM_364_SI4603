@@ -76,6 +76,8 @@ Route::middleware(['auth'])->group(function () {
         return view('orangtua.dashboard', compact('menus', 'artikels'));
     })->name('orangtua.dashboard');
 
+
+
 });
 
 // Deteksi Stunting (Orangtua)
@@ -134,6 +136,7 @@ Route::prefix('orangtua')->name('orangtua.')->middleware('auth')->group(function
     Route::resource('immunization_records', ImmunizationRecordController::class);
     Route::resource('tahapan_perkembangan', TahapanPerkembanganDataController::class);
 });
+
 
 // Nutrition untuk Orangtua
 Route::middleware(['auth'])->group(function () {

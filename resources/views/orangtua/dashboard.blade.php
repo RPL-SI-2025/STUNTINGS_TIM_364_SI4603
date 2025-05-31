@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+
 <style>
     /* OVERRIDE agar container bawaan layout jadi full width hanya untuk halaman ini */
     .container.mt-4 {

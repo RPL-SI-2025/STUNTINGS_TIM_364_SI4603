@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -51,8 +52,40 @@
 
         .navbar-brand {
             font-weight: 700;
-            font-size: 1.5rem;
+
+            font-size: 1.5rem; /* atau 24px */
             color: #005f77 !important;
+        }
+
+        .navbar-nav .nav-link {
+            color: #005f77 !important;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 999px; /* biar super bulat */
+            transition: all 0.25s ease-in-out;
+        }
+
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link:focus,
+        .navbar-nav .nav-link.active {
+            color: #ffffff !important;
+            background-color: #005f77 !important;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* biar ada depth dikit */
+            transform: scale(1.05); /* zoom dikit */
+        }
+
+        .navbar-nav {
+            flex-wrap: wrap;
+        }
+
+        .navbar-nav .nav-link.dropdown-toggle:hover {
+            color: #ffffff !important;
+            background-color: rgba(0, 95, 119, 0.1);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
         }
 
         .navbar-nav .nav-link {
@@ -116,6 +149,7 @@
 <body>
     <nav class="navbar fixed-top navbar-expand-lg px-4">
         <div class="container-fluid">
+
             {{-- Brand --}}
             <a class="navbar-brand" href="{{ Auth::check() && Auth::user()->role === 'admin' ? route('admin.dashboard') : route('orangtua.dashboard') }}">
                 Stuntings
