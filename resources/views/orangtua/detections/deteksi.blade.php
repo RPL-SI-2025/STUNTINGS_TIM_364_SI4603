@@ -7,11 +7,6 @@
 <div class="container mt-5">
     <h1 class="display-5 fw-bold mb-4">Form Deteksi Stunting</h1>
 
-    {{-- Notifikasi sukses --}}
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
     {{-- Notifikasi error --}}
     @if(session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>
