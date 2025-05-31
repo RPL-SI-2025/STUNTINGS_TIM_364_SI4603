@@ -1,13 +1,20 @@
 @extends('layouts.app')
 
+@section('title', 'Edit Imunisasi')
+
 @section('content')
 <div class="container">
-    <h4 class="mb-4 fw-bold">Edit Imunisasi</h4>
+    <h2 class="mb-4">Edit Imunisasi</h2>
+
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
 
     <form action="{{ route('admin.immunizations.update', $immunization->id) }}" method="POST">
         @csrf
         @method('PUT')
 
+        
         <x-input-with-label
             label="Nama Imunisasi"
             name="name"
@@ -20,6 +27,7 @@
             <div class="text-red-500 text-sm mb-3">{{ $message }}</div>
         @enderror
 
+        
         <x-input-with-label
             label="Usia"
             name="age"
@@ -31,82 +39,25 @@
             <div class="text-red-500 text-sm mb-3">{{ $message }}</div>
         @enderror
 
+        {{-- Deskripsi --}}
         <div class="mb-4">
-            <label for="description" class="form-label fw-semibold">Deskripsi</label>
+            <label for="description" class="form-label font-semibold">Deskripsi</label>
             <textarea
                 name="description"
                 id="description"
                 rows="4"
-                class="form-control @error('description') is-invalid @enderror"
+                class="form-control @error('description') border-red-500 @enderror"
             >{{ old('description', $immunization->description) }}</textarea>
             @error('description')
                 <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
             @enderror
         </div>
 
-        <div class="mt-3 d-flex gap-2 flex-wrap">
-            <x-button type="submit" class="bg-blue-600 hover:bg-blue-700">Simpan</x-button>
-            <x-button href="{{ route('admin.immunizations.index') }}" type="button" class="bg-gray-600 hover:bg-gray-700">Batal</x-button>
+        
+        <div class="mt-4 d-flex gap-2 flex-wrap">
+            <x-button type="submit" class="bg-blue-600 hover:bg-blue-700">Update</x-button>
+            <x-button href="{{ route('admin.immunizations.index') }}" type="button" class="bg-gray-600 hover:bg-gray-700">Kembali</x-button>
         </div>
     </form>
 </div>
-
-<style>
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f9fafb;
-        padding-top: 20px;
-    }
-
-    .container {
-        max-width: 700px;
-        margin: auto;
-        background: #fff;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        text-align: justify;
-    }
-
-    .form-control {
-        border-radius: 6px;
-        padding: 10px;
-        font-size: 14px;
-        border: 1px solid #ced4da;
-    }
-
-    .form-label {
-        margin-bottom: 6px;
-    }
-
-    .btn {
-        border-radius: 6px;
-        font-size: 14px;
-        padding: 10px 20px;
-    }
-
-    .btn-primary {
-        background-color: #007bff;
-        border: none;
-    }
-
-    .btn-secondary {
-        background-color: #6c757d;
-        border: none;
-    }
-
-    .btn:hover {
-        opacity: 0.9;
-    }
-
-    @media (max-width: 768px) {
-        .btn {
-            width: 100%;
-        }
-
-        .d-flex.gap-2 {
-            flex-direction: column;
-        }
-    }
-</style>
 @endsection
