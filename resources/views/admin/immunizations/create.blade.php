@@ -1,98 +1,63 @@
 @extends('layouts.app')
 
+@section('title', 'Tambah Imunisasi')
+
 @section('content')
-<div class="container">
-    <h4 class="mb-4 fw-bold">{{ isset($immunization) ? 'Edit' : 'Tambah' }} Imunisasi</h4>
+<div class="container px-0">
+    <div class="card shadow-sm">
+        <div class="card-body">
 
-    <form action="{{ isset($immunization) ? route('admin.immunizations.update', $immunization->id) : route('admin.immunizations.store') }}" method="POST">
-        @csrf
-        @if(isset($immunization))
-            @method('PUT')
-        @endif
+            <h1 class="mb-4 main-title" style="color: #005f77; font-size: 1.75rem;">
+                Tambah Imunisasi
+            </h1>
 
-        <div class="mb-3">
-            <label for="name" class="form-label fw-semibold">Nama Imunisasi</label>
-            <input type="text" name="name" class="form-control" value="{{ old('name', $immunization->name ?? '') }}" required>
+            <form action="{{ route('admin.immunizations.store') }}" method="POST">
+                @csrf
+
+                {{-- Nama Imunisasi --}}
+                <div class="mb-3">
+                    <label for="name" class="form-label fw-semibold">Nama Imunisasi</label>
+                    <input type="text" name="name" id="name"
+                           class="form-control @error('name') is-invalid @enderror"
+                           value="{{ old('name') }}" required>
+                    @error('name')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                {{-- Usia --}}
+                <div class="mb-3">
+                    <label for="age" class="form-label fw-semibold">Usia</label>
+                    <input type="text" name="age" id="age"
+                           class="form-control @error('age') is-invalid @enderror"
+                           value="{{ old('age') }}">
+                    @error('age')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                {{-- Deskripsi --}}
+                <div class="mb-3">
+                    <label for="description" class="form-label fw-semibold">Deskripsi</label>
+                    <textarea name="description" id="description" rows="4"
+                              class="form-control @error('description') is-invalid @enderror">{{ old('description') }}</textarea>
+                    @error('description')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                {{-- Tombol --}}
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn text-white" style="background-color: #005f77;">
+                        Simpan
+                    </button>
+                    <a href="{{ route('admin.immunizations.index') }}" class="btn btn-secondary">
+                        Batal
+                    </a>
+                </div>
+            </form>
+
         </div>
-
-        <div class="mb-3">
-            <label for="age" class="form-label fw-semibold">Usia</label>
-            <input type="text" name="age" class="form-control" value="{{ old('age', $immunization->age ?? '') }}">
-        </div>
-
-        <div class="mb-3">
-            <label for="description" class="form-label fw-semibold">Deskripsi</label>
-            <textarea name="description" class="form-control" rows="4">{{ old('description', $immunization->description ?? '') }}</textarea>
-        </div>
-
-        <div class="mt-3 d-flex gap-2">
-            <button type="submit" class="btn btn-primary">{{ isset($immunization) ? 'Update' : 'Simpan' }}</button>
-            <a href="{{ route('admin.immunizations.index') }}" class="btn btn-secondary">Batal</a>
-        </div>
-    </form>
+    </div>
 </div>
-
-<style>
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f9fafb;
-        padding-top: 20px;
-    }
-
-    .container {
-        max-width: 700px;
-        margin: auto;
-        background: #fff;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.05);
-        text-align: justify;
-    }
-
-    .form-label {
-        margin-bottom: 6px;
-    }
-
-    .form-control {
-        border-radius: 6px;
-        padding: 10px;
-        border: 1px solid #ced4da;
-        font-size: 14px;
-    }
-
-    textarea.form-control {
-        resize: vertical;
-        min-height: 100px;
-    }
-
-    .btn {
-        border-radius: 6px;
-        font-size: 14px;
-        padding: 10px 20px;
-    }
-
-    .btn-primary {
-        background-color: #007bff;
-        border: none;
-    }
-
-    .btn-secondary {
-        background-color: #6c757d;
-        border: none;
-    }
-
-    .btn:hover {
-        opacity: 0.9;
-    }
-
-    @media (max-width: 768px) {
-        .btn {
-            width: 100%;
-        }
-
-        .d-flex.gap-2 {
-            flex-direction: column;
-        }
-    }
-</style>
 @endsection
