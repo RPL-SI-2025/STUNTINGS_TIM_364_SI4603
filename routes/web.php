@@ -76,6 +76,7 @@ Route::middleware(['auth'])->group(function () {
         return view('orangtua.dashboard', compact('menus', 'artikels'));
     })->name('orangtua.dashboard');
 
+
 });
 
 // Deteksi Stunting (Orangtua)
@@ -153,3 +154,8 @@ Route::post('/hitung-bmi', [BMICalculatorController::class, 'calculate'])->name(
 Route::post('/simpan-bmi', [BMICalculatorController::class, 'save'])->name('simpan-bmi');
 Route::post('/reset-bmi', [BMICalculatorController::class, 'reset'])->name('reset-bmi');
 Route::post('/hapus-bmi/{index}', [BMICalculatorController::class, 'deleteRow'])->name('hapus-bmi-row');
+
+Route::get('/orangtua/profile', function () {
+    if (Auth::user()->role !== 'orangtua') abort(403);
+    return view('orangtua.profile');
+})->middleware('auth')->name('profile');
