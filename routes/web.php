@@ -77,6 +77,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('orangtua.dashboard');
 
 
+
 });
 
 // Deteksi Stunting (Orangtua)
@@ -137,9 +138,81 @@ Route::prefix('orangtua')->name('orangtua.')->middleware('auth')->group(function
 });
 
 
+// Nutrition untuk Orangtua
+Route::middleware(['auth'])->group(function () {
+    Route::get('/orangtua/nutritionUs', [NutritionController::class, 'user'])
+        ->name('orangtua.nutritionUs.index');
+
+    Route::get('/orangtua/nutritionUs/{id}', function (string $id) {
         if (auth()->user()->role !== 'orangtua') abort(403, 'Unauthorized');
         $menu = NutritionRecommendation::findOrFail($id);
         return view('orangtua.nutritionus.show', compact('menu'));
     })->name('orangtua.nutritionUs.show');
 });
 
+//bmi
+Route::middleware(['auth'])->group(function () {
+    Route::get('/bmi', function() {
+        // Check if user has orangtua role
+        if (Auth::user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized. Only orangtua can access this page.');
+        }
+        
+        // If role is correct, proceed to the controller
+        return app()->make(BMICalculatorController::class)->showBmiData();
+    })->name('bmi');
+        
+    // POST routes for BMI functionality
+    Route::post('/hitung-bmi', function(Request $request) {
+        if (Auth::user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized. Only orangtua can access this feature.');
+        }
+        return app()->make(BMICalculatorController::class)->calculate($request);
+    })->name('hitung-bmi');
+        
+    Route::post('/simpan-bmi', function(Request $request) {
+        if (Auth::user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized. Only orangtua can access this feature.');
+        }
+        return app()->make(BMICalculatorController::class)->save($request);
+    })->name('simpan-bmi');
+        
+    Route::post('/reset-bmi', function() {
+        if (Auth::user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized. Only orangtua can access this feature.');
+        }
+        return app()->make(BMICalculatorController::class)->reset();
+    })->name('reset-bmi');
+        
+    Route::post('/hapus-bmi/{index}', function($index) {
+        if (Auth::user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized. Only orangtua can access this feature.');
+        }
+        return app()->make(BMICalculatorController::class)->deleteRow($index);
+    })->name('hapus-bmi-row');
+        
+    Route::post('/kalori-harian', function(Request $request) {
+        if (Auth::user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized. Only orangtua can access this feature.');
+        }
+        return app()->make(BMICalculatorController::class)->hitungKalori($request);
+    })->name('kalori-harian');
+        
+    Route::post('/calculate-calories', function(Request $request) {
+        if (Auth::user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized. Only orangtua can access this feature.');
+        }
+        return app()->make(BMICalculatorController::class)->calculateCalories($request);
+    })->name('calculate.calories');
+        
+    Route::post('/hitung-kalori', function(Request $request) {
+        if (Auth::user()->role !== 'orangtua') {
+            abort(403, 'Unauthorized. Only orangtua can access this feature.');
+        }
+        return app()->make(BMICalculatorController::class)->hitungKalori($request);
+    })->name('hitungKalori');
+});
+
+Route::get('/profile', function () {
+    return view('profile'); // universal view
+})->middleware('auth')->name('profile');
