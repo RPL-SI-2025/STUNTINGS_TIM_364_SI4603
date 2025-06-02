@@ -68,16 +68,24 @@ class BMICalculatorController extends Controller
 
     public function calculate(Request $request)
     {
+        $request->validate([
+            'gender' => 'required',
+            'tinggi' => 'required|numeric|min:1',
+            'berat' => 'required|numeric|min:1',
+        ], [
+            'required' => 'Harap lengkapi semua data terlebih dahulu.',
+        ]);
+
         $gender = strtolower($request->input('gender'));
         $rawTinggi = $request->input('tinggi');
         $tinggi = $request->input('tinggi') / 100;
         $berat = $request->input('berat');
 
-         if ($tinggi > 0) {
-                $bmi = $berat / ($tinggi * $tinggi);
-            } else {
-                $bmi = 0;
-            }
+        if ($tinggi > 0) {
+            $bmi = $berat / ($tinggi * $tinggi);
+        } else {
+            $bmi = 0;
+        }
 
         if ($gender == 'pria' || $gender == 'laki-laki') {
             $status = $this->statusBmiPria($bmi);
@@ -99,16 +107,20 @@ class BMICalculatorController extends Controller
     
     public function reset()
     {
-        session(['bmi'=> ""]);
-        session(['status'=> ""]);
-        session(['tinggi'=> ""]);
-        session(['gender'=> ""]);
-        session(['berat'=> ""]);
+        session()->forget(['bmi', 'status', 'tinggi', 'gender', 'berat']);
         return redirect()->route('bmi');
     }
 
     public function save(Request $request)
     {
+        $request->validate([
+            'gender' => 'required',
+            'tinggi' => 'required|numeric|min:1',
+            'berat' => 'required|numeric|min:1',
+        ], [
+            'required' => 'Harap lengkapi semua data terlebih dahulu.',
+        ]);
+
         $tinggiCm = $request->input('tinggi'); // ✅ untuk BMR
         $tinggi = $tinggiCm / 100;             // ✅ untuk BMI
         $user = Auth::user();  // Get the authenticated user
