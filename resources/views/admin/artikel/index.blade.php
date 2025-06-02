@@ -171,7 +171,6 @@
         color: #6b7280;
         margin: 3rem 0;
     }
-
 </style>
 
 {{-- Header --}}
@@ -261,6 +260,11 @@
         @empty
             <p class="empty-message">Belum ada artikel yang tersedia.</p>
         @endforelse
+
+        {{-- Tambahan untuk negative test filter --}}
+        @if ($artikels->isEmpty() && request()->has('kategori'))
+            <p class="empty-message">Tidak ada artikel ditemukan untuk kategori ini.</p>
+        @endif
     </div>
 </div>
 

@@ -41,7 +41,7 @@ class ImmunizationController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'age' => 'nullable|string|max:100',
+            'age' => 'required|string|max:100',
             'description' => 'nullable|string',
         ]);
 
@@ -75,7 +75,7 @@ class ImmunizationController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'age' => 'nullable|string|max:100',
+            'age' => 'required|string|max:100',
             'description' => 'nullable|string',
         ]);
 
