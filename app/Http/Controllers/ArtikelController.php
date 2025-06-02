@@ -13,6 +13,7 @@ class ArtikelController extends Controller
     public function index(Request $request)
     {
         $kategoriIds = $request->input('kategori', []);
+        $search = $request->input('search');
         $kategoris = ArtikelKategori::all();
 
         $artikels = Artikel::with('kategoris')
@@ -21,12 +22,16 @@ class ArtikelController extends Controller
                     $q->whereIn('artikel_kategori_id', $kategoriIds);
                 });
             })
+            ->when($search, function ($query) use ($search) {
+                $query->where('title', 'like', "%{$search}%");
+            })
             ->latest()
             ->paginate(12)
-            ->withQueryString(); // Gantikan appends() dengan ini
+            ->withQueryString();
 
-        return view('admin.artikel.index', compact('artikels', 'kategoris', 'kategoriIds'));
+        return view('admin.artikel.index', compact('artikels', 'kategoris', 'kategoriIds', 'search'));
     }
+
 
     public function create()
     {

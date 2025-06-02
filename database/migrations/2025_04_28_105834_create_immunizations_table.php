@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('immunizations', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('age')->nullable();        
+            $table->string('age');        
             $table->text('description')->nullable();  
             $table->timestamps();
         });
