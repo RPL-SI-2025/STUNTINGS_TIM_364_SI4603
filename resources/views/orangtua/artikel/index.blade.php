@@ -239,7 +239,7 @@
                 </div>
             </div>
         @empty
-            <p class="empty-message">Belum ada artikel yang tersedia.</p>
+            <p class="empty-message">Tidak ada artikel ditemukan.</p>
         @endforelse
     </div>
 </div>
